@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+*.jsx linguist-detectable=true
+*.tsx linguist-detectable=true
+webpack.*.js linguist-detectable=false
+babel.config.js linguist-detectable=false
