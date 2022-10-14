@@ -3,7 +3,16 @@
   "version": "1.0.0",
   "description": "Group Project for UW-Madison INFO SYS 371 course (Fall 2022)",
   "main": "src/App.tsx",
-  "author": "Hyecheol <hyecheol123@gmail.com> (Jerry)",
+  "contributors": [
+    {
+      "name": "Hyecheol (Jerry) Jang",
+      "email": "hyecheol.jang@wisc.edu"
+    },
+    {
+      "name": "Wai Zin Linn",
+      "email": "wlinn@wisc.edu"
+    }
+  ],
   "license": "ISC",
   "browserslist": [
     "defaults",
