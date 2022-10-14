@@ -37,6 +37,21 @@ After clone this repository, you have to install dependencies by typing `npm ins
 To run the scripts, type `npm run <script name>`.
 Available scripts are described below.
 
+## Contribution Guidelines
+
+- Before you commit/push your code, run `lint` script to check whether all codes comply with the code style.
+  - For automatic fix, run `lint:fix` script.
+- The main branch is protected.
+  The only way to modify codes in the main branch is use pull request.
+  Therefore, you have to work in the other branch and submit pull request to merge your code to the main branch.
+- Follow the feature branch rule which illustrates the issue number and the asignee of the task.
+  - Branch name rule: `feature-<Issue Number>-<your name>` or `bugfix-<Issue Number>-<your name>`
+  - e.g.) `feature-#1-jerry`
+- All tasks are listed as issues.
+  Please refer to the Issue tab of the repository or a [project board](https://github.com/users/hyecheol123/projects/3).
+  - Once you start the task, move task to **In Progres**.
+  - Once you finish writing the code and submit the pull request, make sure that you **link** the issue by indicating the issue number in the description of the pull request. Also, move the issue to **Pending Review** on the project board.
+
 ## Scripts
 
 Here is the list for npm/yarn scripts.
