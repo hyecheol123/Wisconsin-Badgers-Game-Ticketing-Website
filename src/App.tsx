@@ -1,6 +1,6 @@
 // React
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 /**
  * React functional component to render the application content
@@ -11,5 +11,10 @@ function App(): React.ReactElement {
   return <div>Hello World!!</div>;
 }
 
-console.log('Reached');
-render(<React.StrictMode><App /></React.StrictMode>, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
