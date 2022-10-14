@@ -1,8 +1,11 @@
-# Wisconsin Badger Game Ticketing Website
+# Wisconsin Badgers Game Ticketing Website
 
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
-**TODO: Add some project description - Header / Goal**
+This is a repository for the group project of INFO SYS 371 course of UW-Madison (Fall 2022).
+With the consent of instructor, we decide to use React and MUI, not vanilla Javascript with Bulma (CSS Library) to build Wisconsin Badgers Game Ticketing Website.  
+
+Note that this is not the official ticketing website for Wisdonsin Badgers.
 
 *Full Website: Not Yet Published*
 
@@ -59,4 +62,4 @@ Also utilize `Material UI (MUI) Library v5.10.9` for elegant design.
 
 ## Database Structure & Schema
 
-**TODO: TBD**
+**TODO: Tentative (Firebase) / UML**
