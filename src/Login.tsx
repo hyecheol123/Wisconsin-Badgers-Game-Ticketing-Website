@@ -172,7 +172,9 @@ function Login(): React.ReactElement {
                 </Button>
               </Box>
             </form>
-            <Link href='/signup' variant="body2" sx={styles.SignUpLink}>Create New Account</Link>
+            <Link href="/signup" variant="body2" sx={styles.SignUpLink}>
+              Create New Account
+            </Link>
           </Box>
           <Snackbar
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

@@ -35,7 +35,7 @@ const accountStyle = {
   SignUpLink: {
     fontWeight: 500,
     margin: '5px 0',
-  }
+  },
 };
 
 export default accountStyle;
