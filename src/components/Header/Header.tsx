@@ -10,6 +10,7 @@ import React from 'react';
 // Material UI
 import { Box, Stack, Typography } from '@mui/material';
 // Components
+import AccountBtn from './AccountBtn';
 // Styles
 import styles from './HeaderStyle';
 
@@ -26,6 +27,7 @@ function Header(): React.ReactElement {
           Badgers Game Ticket
         </Typography>
       </Stack>
+      <AccountBtn />
     </Box>
   );
 }
