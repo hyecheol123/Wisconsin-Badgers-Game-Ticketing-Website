@@ -71,18 +71,9 @@ function App(): React.ReactElement {
             path="/"
             element={loginContext.initialized ? <LandingPage /> : <Loading />}
           />
-          <Route
-            path="/login"
-            element={<div>Login Page</div>}
-          />
-          <Route
-            path="/changePW"
-            element={<div>Change Password Page</div>}
-          />
-          <Route
-            path="/mypage"
-            element={<div>My Page</div>}
-          />
+          <Route path="/login" element={<div>Login Page</div>} />
+          <Route path="/changePW" element={<div>Change Password Page</div>} />
+          <Route path="/mypage" element={<div>My Page</div>} />
         </Routes>
       </Router>
     </ThemeProvider>
