@@ -21,6 +21,7 @@ import '@fontsource/ibm-plex-sans-kr/500.css';
 import Loading from './components/Loading/Loading';
 import { LoginContextProvider, useLoginContext } from './LoginContext';
 import LandingPage from './LandingPage';
+import Login from './Login';
 
 // MUI Theme (Setup Font family)
 const theme = createTheme({
@@ -71,9 +72,13 @@ function App(): React.ReactElement {
             path="/"
             element={loginContext.initialized ? <LandingPage /> : <Loading />}
           />
-          <Route path="/login" element={<div>Login Page</div>} />
+          <Route
+            path="/login"
+            element={loginContext.initialized ? <Login /> : <Loading />}
+          />
           <Route path="/changePW" element={<div>Change Password Page</div>} />
           <Route path="/mypage" element={<div>My Page</div>} />
+          <Route path="/signup" element={<div>Sign Up Page</div>} />
         </Routes>
       </Router>
     </ThemeProvider>
