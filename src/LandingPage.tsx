@@ -8,7 +8,7 @@
 import React from 'react';
 // Material UI
 // Components
-import Header from './components/Header';
+import Header from './components/Header/Header';
 // Global Style
 
 /**

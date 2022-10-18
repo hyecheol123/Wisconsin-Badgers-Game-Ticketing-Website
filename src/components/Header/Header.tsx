@@ -11,7 +11,7 @@ import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 // Components
 // Styles
-import styles from '../globalStyle/headerStyle';
+import styles from './HeaderStyle';
 
 /**
  * React functional component to generate header
