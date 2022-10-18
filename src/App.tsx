@@ -22,6 +22,7 @@ import Loading from './components/Loading/Loading';
 import { LoginContextProvider, useLoginContext } from './LoginContext';
 import LandingPage from './LandingPage';
 import Login from './Login';
+import ChangePW from './ChangePW';
 
 // MUI Theme (Setup Font family)
 const theme = createTheme({
@@ -76,7 +77,10 @@ function App(): React.ReactElement {
             path="/login"
             element={loginContext.initialized ? <Login /> : <Loading />}
           />
-          <Route path="/changePW" element={<div>Change Password Page</div>} />
+          <Route
+            path="/changePW"
+            element={loginContext.initialized ? <ChangePW /> : <Loading />}
+          />
           <Route path="/mypage" element={<div>My Page</div>} />
           <Route path="/signup" element={<div>Sign Up Page</div>} />
         </Routes>
