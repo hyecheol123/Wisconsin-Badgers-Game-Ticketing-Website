@@ -6,6 +6,8 @@
 
 // React
 import React from 'react';
+// React Router
+import { useNavigate } from 'react-router-dom';
 // Material UI
 import { Box, Button, Typography } from '@mui/material';
 // Components
@@ -23,6 +25,14 @@ import stadiumPhoto from '../assets/camp-randall-stadium.jpg';
  * @return {React.ReactElement} Renders Landing Page
  */
 function LandingPage(): React.ReactElement {
+  // React Router
+  const navigate = useNavigate();
+
+  // Function to move to the game list page
+  const gameList = React.useCallback((): void => {
+    navigate('/games');
+  }, [navigate]);
+
   return (
     <>
       <Header />
@@ -67,7 +77,11 @@ function LandingPage(): React.ReactElement {
             <Typography variant="h6" align="center" sx={styles.CheckoutMsg}>
               Check out the game tickets now!!
             </Typography>
-            <Button variant="contained" sx={styles.CheckoutBtn}>
+            <Button
+              variant="contained"
+              onClick={gameList}
+              sx={styles.CheckoutBtn}
+            >
               Explore Tickets
             </Button>
           </Box>

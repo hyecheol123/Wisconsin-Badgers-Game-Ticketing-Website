@@ -119,6 +119,7 @@ function App(): React.ReactElement {
           <Route path="/mypage" element={<div>My Page</div>} />
           <Route path="/signup" element={<div>Sign Up Page</div>} />
           <Route path="/terms" element={<div>Terms and Condition</div>} />
+          <Route path="/games" element={<div>List of Games</div>} />
         </Routes>
       </Router>
     </ThemeProvider>
