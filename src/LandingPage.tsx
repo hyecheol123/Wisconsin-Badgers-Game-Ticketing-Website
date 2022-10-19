@@ -13,8 +13,9 @@ import { Box, Button, Typography } from '@mui/material';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
-// Global Style
-import styles from './LandingPageStyle';
+// Styles
+import landingPageStyle from './LandingPageStyle';
+import contentStyle from './globalStyles/contentStyle';
 // Images
 import groupPhoto from '../assets/wisconsin-badgers-athletes-group.jpeg';
 import stadiumPhoto from '../assets/camp-randall-stadium.jpg';
@@ -36,23 +37,23 @@ function LandingPage(): React.ReactElement {
   return (
     <>
       <Header />
-      <Box sx={styles.ContentWrapper}>
-        <Box sx={styles.Content}>
+      <Box sx={contentStyle.ContentWrapper}>
+        <Box sx={contentStyle.Content}>
           <img
-            style={styles.GroupPhoto}
+            style={landingPageStyle.GroupPhoto}
             src={groupPhoto}
             alt="Wisconsin Badgers Football Team Group"
           />
-          <Box sx={styles.TextWrapper}>
+          <Box sx={landingPageStyle.TextWrapper}>
             <Typography
               variant="h3"
               align="center"
               component="div"
-              sx={styles.Title}
+              sx={landingPageStyle.Title}
             >
               Welcome to Wisconsin Badgers Ticketing Site!
             </Typography>
-            <Box sx={styles.BodyWrapper}>
+            <Box sx={landingPageStyle.BodyWrapper}>
               <Typography variant="body1" align="left">
                 This is a website to purchase the home game ticket of Wisconsin
                 Badgers Football team. Briefly introduce about the Wisconsin
@@ -70,17 +71,21 @@ function LandingPage(): React.ReactElement {
               </Typography>
             </Box>
             <img
-              style={styles.StadiumPhoto}
+              style={landingPageStyle.StadiumPhoto}
               src={stadiumPhoto}
               alt="Camp Randall Stadium"
             />
-            <Typography variant="h6" align="center" sx={styles.CheckoutMsg}>
+            <Typography
+              variant="h6"
+              align="center"
+              sx={landingPageStyle.CheckoutMsg}
+            >
               Check out the game tickets now!!
             </Typography>
             <Button
               variant="contained"
               onClick={gameList}
-              sx={styles.CheckoutBtn}
+              sx={landingPageStyle.CheckoutBtn}
             >
               Explore Tickets
             </Button>

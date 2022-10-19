@@ -23,6 +23,7 @@ import { LoginContextProvider, useLoginContext } from './LoginContext';
 import LandingPage from './LandingPage';
 import Login from './Login';
 import ChangePW from './ChangePW';
+import TermsAndCondition from './TermsAndCondition';
 
 // MUI Theme (Setup Font family)
 const breakpoints = {
@@ -118,7 +119,12 @@ function App(): React.ReactElement {
           />
           <Route path="/mypage" element={<div>My Page</div>} />
           <Route path="/signup" element={<div>Sign Up Page</div>} />
-          <Route path="/terms" element={<div>Terms and Condition</div>} />
+          <Route
+            path="/terms"
+            element={
+              loginContext.initialized ? <TermsAndCondition /> : <Loading />
+            }
+          />
           <Route path="/games" element={<div>List of Games</div>} />
         </Routes>
       </Router>

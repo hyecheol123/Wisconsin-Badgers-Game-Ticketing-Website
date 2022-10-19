@@ -5,12 +5,6 @@
  */
 
 const LandingPageStyle = {
-  ContentWrapper: { display: 'flex', justifyContent: 'center' },
-  Content: {
-    margin: '1em 0.5em 4em 0.5em',
-    width: 'calc(100%-1em)',
-    maxWidth: '1024px',
-  },
   GroupPhoto: { width: '100%' },
   TextWrapper: {
     display: 'flex',
