@@ -56,7 +56,7 @@ const theme = createTheme({
       },
     },
     h6: {
-      [`@media screen and (max-width: 300px)`]: {
+      '@media screen and (max-width: 300px)': {
         // Galaxy Fold
         fontSize: '1.0em',
       },

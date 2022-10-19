@@ -12,9 +12,10 @@ import { Box, Button, Typography } from '@mui/material';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Global Style
+import styles from './LandingPageStyle';
 // Images
 import groupPhoto from '../assets/wisconsin-badgers-athletes-group.jpeg';
-import stadiumPhoto from '../assets/camp-randall-stadium.jpg'
+import stadiumPhoto from '../assets/camp-randall-stadium.jpg';
 
 /**
  * React functinoal component for LandingPage
@@ -25,35 +26,23 @@ function LandingPage(): React.ReactElement {
   return (
     <>
       <Header />
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Box
-          sx={{
-            margin: '1em 0.5em 4em 0.5em',
-            width: 'calc(100%-1em)',
-            maxWidth: '1024px',
-          }}
-        >
+      <Box sx={styles.ContentWrapper}>
+        <Box sx={styles.Content}>
           <img
-            style={{ width: '100%' }}
+            style={styles.GroupPhoto}
             src={groupPhoto}
             alt="Wisconsin Badgers Football Team Group"
           />
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+          <Box sx={styles.TextWrapper}>
             <Typography
               variant="h3"
               align="center"
               component="div"
-              sx={{ margin: '1.5em 0' }}
+              sx={styles.Title}
             >
               Welcome to Wisconsin Badgers Ticketing Site!
             </Typography>
-            <Box sx={{ width: '100%', padding: '0 0.5em' }}>
+            <Box sx={styles.BodyWrapper}>
               <Typography variant="body1" align="left">
                 This is a website to purchase the home game ticket of Wisconsin
                 Badgers Football team. Briefly introduce about the Wisconsin
@@ -71,14 +60,14 @@ function LandingPage(): React.ReactElement {
               </Typography>
             </Box>
             <img
-            style={{ width: '70%', margin: '2.5em 0 1em 0'  }}
-            src={stadiumPhoto}
-            alt="Camp Randall Stadium"
-          />
-            <Typography variant="h6" align="center" sx={ {margin: '1.5em 0 1em 0' } }>
-                Check out the game tickets now!!
-              </Typography>
-            <Button variant="contained" sx={{ margin: '1em 0 1.5em 0', flexGrow: 0 }}>
+              style={styles.StadiumPhoto}
+              src={stadiumPhoto}
+              alt="Camp Randall Stadium"
+            />
+            <Typography variant="h6" align="center" sx={styles.CheckoutMsg}>
+              Check out the game tickets now!!
+            </Typography>
+            <Button variant="contained" sx={styles.CheckoutBtn}>
               Explore Tickets
             </Button>
           </Box>
