@@ -35,6 +35,7 @@ const accountStyle = {
   SignUpLink: {
     fontWeight: 500,
     margin: '5px 0',
+    cursor: 'pointer',
   },
   Title: {
     marginBottom: '10px',
