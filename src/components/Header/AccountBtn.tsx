@@ -21,6 +21,8 @@ import {
 import { AccountCircle } from '@mui/icons-material';
 // Custom Hooks to load LoginContext
 import { useLoginContext } from '../../LoginContext';
+// Style
+import styles from './AccountBtnStyle';
 
 /**
  * React Functional Component to generate account button
@@ -76,12 +78,12 @@ function AccountBtn(): React.ReactElement {
   }, [loginContext, handleCloseUserMenu]);
 
   return (
-    <Box sx={{ flexGrow: 0 }}>
-      <IconButton onClick={handleOpenUserMenu} sx={{ padding: '4px' }}>
-        <AccountCircle sx={{ height: '32px', width: '32px', color: 'white' }} />
+    <Box sx={styles.Wrapper}>
+      <IconButton onClick={handleOpenUserMenu} sx={styles.IconWrapper}>
+        <AccountCircle sx={styles.Icon} />
       </IconButton>
       <Menu
-        sx={{ mt: '35px' }}
+        sx={styles.MenuWrapper}
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         keepMounted
@@ -97,7 +99,7 @@ function AccountBtn(): React.ReactElement {
           <Typography textAlign="center">Change PW</Typography>
         </MenuItem>
         <MenuItem onClick={logout}>
-          <Typography textAlign="center" sx={{ color: 'red', fontWeight: 500 }}>
+          <Typography textAlign="center" sx={styles.MenuHighlight}>
             Logout
           </Typography>
         </MenuItem>

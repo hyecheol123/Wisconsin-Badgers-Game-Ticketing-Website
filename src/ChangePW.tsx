@@ -133,7 +133,7 @@ function ChangePW(): React.ReactElement {
       {loginContext.login && (
         <>
           <Box sx={styles.Wrapper}>
-            <Typography variant="h5" sx={{ mb: '10px' }}>
+            <Typography variant="h5" sx={styles.Title}>
               Change Password
             </Typography>
             <form onSubmit={formSubmit} style={styles.FormWrapper}>
@@ -147,7 +147,7 @@ function ChangePW(): React.ReactElement {
                 margin="normal"
                 value={currentPW}
                 onChange={onCurrentPWChange}
-                sx={{ margin: '5px 0', width: '100%' }}
+                sx={styles.TextField}
               />
               <TextField
                 disabled={disabled}
@@ -159,7 +159,7 @@ function ChangePW(): React.ReactElement {
                 margin="normal"
                 value={newPW}
                 onChange={onNewPWChange}
-                sx={{ margin: '5px 0', width: '100%' }}
+                sx={styles.TextField}
               />
               <TextField
                 disabled={disabled}
@@ -171,7 +171,7 @@ function ChangePW(): React.ReactElement {
                 margin="normal"
                 value={confirmPW}
                 onChange={onConfirmPWChange}
-                sx={{ margin: '5px 0', width: '100%' }}
+                sx={styles.TextField}
               />
               <Box sx={styles.ButtonWrapper}>
                 <Button
@@ -179,7 +179,7 @@ function ChangePW(): React.ReactElement {
                   color="primary"
                   variant="contained"
                   disabled={disabled}
-                  sx={{ width: 'calc(50% - 10px)' }}
+                  sx={styles.Button}
                 >
                   Change PW
                 </Button>
@@ -187,7 +187,7 @@ function ChangePW(): React.ReactElement {
                   color="secondary"
                   variant="contained"
                   disabled={disabled}
-                  sx={{ width: 'calc(50% - 10px)' }}
+                  sx={styles.Button}
                   onClick={goBack}
                 >
                   Cancel
