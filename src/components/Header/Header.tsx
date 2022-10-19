@@ -32,7 +32,12 @@ function Header(): React.ReactElement {
   return (
     <Box sx={styles.headerWrapper}>
       <Stack direction="row" sx={styles.headerTitleWrapper}>
-        <Link variant="h5" underline="none" sx={styles.websiteTitle} onClick={toMain}>
+        <Link
+          variant="h5"
+          underline="none"
+          sx={styles.websiteTitle}
+          onClick={toMain}
+        >
           Badgers Game Ticket
         </Link>
       </Stack>

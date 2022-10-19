@@ -57,7 +57,6 @@ function Login(): React.ReactElement {
     navigate('/signup');
   }, [navigate]);
 
-
   // EventHandlers to modify form input
   const onUsernameChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent): void => {
