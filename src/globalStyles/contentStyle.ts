@@ -7,9 +7,10 @@
 const contentStyle = {
   ContentWrapper: { display: 'flex', justifyContent: 'center' },
   Content: {
-    margin: '1em 0.5em 4em 0.5em',
-    width: 'calc(100%-1em)',
+    padding: '1em 0.5em 4em 0.5em',
+    width: '100%',
     maxWidth: '1024px',
+    minHeight: '87.5vh',
   },
 };
 

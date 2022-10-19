@@ -24,6 +24,7 @@ import LandingPage from './LandingPage';
 import Login from './Login';
 import ChangePW from './ChangePW';
 import TermsAndCondition from './TermsAndCondition';
+import SignUp from './SignUp';
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {
@@ -188,7 +189,10 @@ function App(): React.ReactElement {
             element={loginContext.initialized ? <ChangePW /> : <Loading />}
           />
           <Route path="/mypage" element={<div>My Page</div>} />
-          <Route path="/signup" element={<div>Sign Up Page</div>} />
+          <Route
+            path="/signup"
+            element={loginContext.initialized ? <SignUp /> : <Loading />}
+          />
           <Route
             path="/terms"
             element={
