@@ -121,7 +121,7 @@ function Login(): React.ReactElement {
       {!loginContext.login && (
         <>
           <Box sx={styles.Wrapper}>
-            <Typography variant="h5" sx={{ mb: '10px' }}>
+            <Typography variant="h5" sx={styles.Title}>
               Login
             </Typography>
             <form onSubmit={formSubmit} style={styles.FormWrapper}>
@@ -134,7 +134,7 @@ function Login(): React.ReactElement {
                 margin="normal"
                 value={username}
                 onChange={onUsernameChange}
-                sx={{ margin: '5px 0', width: '100%' }}
+                sx={styles.TextField}
               ></TextField>
               <TextField
                 disabled={disabled}
@@ -146,7 +146,7 @@ function Login(): React.ReactElement {
                 margin="normal"
                 value={password}
                 onChange={onPasswordChange}
-                sx={{ margin: '5px 0', width: '100%' }}
+                sx={styles.TextField}
               ></TextField>
               <Box sx={styles.ButtonWrapper}>
                 <Button
@@ -154,7 +154,7 @@ function Login(): React.ReactElement {
                   color="primary"
                   variant="contained"
                   disabled={disabled}
-                  sx={{ width: 'calc(50% - 10px)' }}
+                  sx={styles.Button}
                 >
                   Login
                 </Button>
@@ -162,7 +162,7 @@ function Login(): React.ReactElement {
                   color="secondary"
                   variant="contained"
                   disabled={disabled}
-                  sx={{ width: 'calc(50% - 10px)' }}
+                  sx={styles.Button}
                   onClick={goBack}
                 >
                   Cancel

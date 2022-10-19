@@ -36,6 +36,16 @@ const accountStyle = {
     fontWeight: 500,
     margin: '5px 0',
   },
+  Title: {
+    marginBottom: '10px',
+  },
+  TextField: {
+    margin: '5px 0',
+    width: '100%',
+  },
+  Button: {
+    width: 'calc(50% - 10px)',
+  },
 };
 
 export default accountStyle;

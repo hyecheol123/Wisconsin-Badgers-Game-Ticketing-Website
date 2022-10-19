@@ -1,5 +1,5 @@
 /**
- * Define globally used header style
+ * Define header style
  *
  * @author Hyecheol (Jerry) Jang <hyecheol123@gmail.com>
  */
