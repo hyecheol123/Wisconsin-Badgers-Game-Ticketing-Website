@@ -20,6 +20,7 @@ const footerStyle = {
   },
   termsLink: {
     marginTop: '0.35em',
+    cursor: 'pointer',
   },
 };
 

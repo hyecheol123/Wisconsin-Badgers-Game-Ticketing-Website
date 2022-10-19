@@ -52,6 +52,12 @@ function Login(): React.ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Function to direct user to the signup page
+  const toSignUp = React.useCallback((): void => {
+    navigate('/signup');
+  }, [navigate]);
+
+
   // EventHandlers to modify form input
   const onUsernameChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent): void => {
@@ -169,7 +175,7 @@ function Login(): React.ReactElement {
                 </Button>
               </Box>
             </form>
-            <Link href="/signup" variant="body2" sx={styles.SignUpLink}>
+            <Link onClick={toSignUp} variant="body2" sx={styles.SignUpLink}>
               Create New Account
             </Link>
           </Box>

@@ -6,6 +6,8 @@
 
 // React
 import React from 'react';
+// React Router
+import { useNavigate } from 'react-router-dom';
 // Material UI
 import { Box, Link, Typography } from '@mui/material';
 // Styles
@@ -17,6 +19,14 @@ import styles from './FooterStyle';
  * @return {React.ReactElement} Render footer
  */
 function Footer(): React.ReactElement {
+  // React Router
+  const navigate = useNavigate();
+
+  // Function to move to the terms and condition
+  const toTerms = React.useCallback((): void => {
+    navigate('/terms');
+  }, [navigate]);
+
   return (
     <Box sx={styles.footerWrapper}>
       <Typography align="center" variant="body2" sx={styles.text}>
@@ -36,7 +46,7 @@ function Footer(): React.ReactElement {
       </Typography>
       <Link
         align="center"
-        href="/terms"
+        onClick={toTerms}
         variant="caption"
         sx={{ ...styles.termsLink, ...styles.text }}
       >
