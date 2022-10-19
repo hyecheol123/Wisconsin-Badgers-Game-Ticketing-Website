@@ -25,7 +25,27 @@ import Login from './Login';
 import ChangePW from './ChangePW';
 import TermsAndCondition from './TermsAndCondition';
 
-// MUI Theme (Setup Font family)
+// MUI Theme (Setup Font family and Typogrpahy)
+declare module '@mui/material/styles' {
+  interface TypographyVariantOptions {
+    tcPageTitle?: React.CSSProperties;
+    tcCaption?: React.CSSProperties;
+    tcTitle?: React.CSSProperties;
+    tcSubTitle?: React.CSSProperties;
+    tcBody?: React.CSSProperties;
+    tcBodyList?: React.CSSProperties;
+  }
+}
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    tcPageTitle: true;
+    tcCaption: true;
+    tcTitle: true;
+    tcSubTitle: true;
+    tcBody: true;
+    tcBodyList: true;
+  }
+}
 const breakpoints = {
   values: {
     xs: 0,
@@ -65,6 +85,56 @@ const theme = createTheme({
     body2: {
       [`@media screen and (max-width: ${breakpoints.values.md}px)`]: {
         fontSize: '0.825em',
+      },
+    },
+    tcPageTitle: {
+      fontSize: '26px',
+      fontWeight: 500,
+      color: 'black',
+      marginTop: '1em',
+      marginBottom: '1em',
+    },
+    tcCaption: {
+      fontSize: '14px',
+      color: '#595959',
+      fontWeight: 500,
+      marginTop: '1em',
+      marginBottom: '1em',
+    },
+    tcTitle: {
+      fontSize: '18px',
+      color: 'black',
+      marginTop: '1em',
+      marginBottom: '1em',
+    },
+    tcSubTitle: {
+      fontSize: '16px',
+      color: 'black',
+      marginTop: '1em',
+      marginBottom: '1em',
+    },
+    tcBody: {
+      fontSize: '14px',
+      color: '#595959',
+      marginTop: '1em',
+      marginBottom: '1em',
+    },
+    tcBodyList: {
+      fontSize: '14px',
+      color: '#595959',
+    },
+  },
+  components: {
+    MuiTypography: {
+      defaultProps: {
+        variantMapping: {
+          tcPageTitle: 'h1',
+          tcCaption: 'p',
+          tcTitle: 'h2',
+          tcSubTitle: 'h4',
+          tcBody: 'p',
+          tcBodyList: 'p',
+        },
       },
     },
   },
