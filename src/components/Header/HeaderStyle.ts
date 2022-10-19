@@ -20,6 +20,7 @@ const headerStyle = {
   websiteTitle: {
     color: 'white',
     padding: '0.15em',
+    cursor: 'pointer',
   },
 };
 

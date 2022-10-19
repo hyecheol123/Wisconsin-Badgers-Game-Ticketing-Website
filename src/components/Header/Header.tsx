@@ -6,9 +6,10 @@
 
 // React
 import React from 'react';
-// Router
+// React Router
+import { useNavigate } from 'react-router-dom';
 // Material UI
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack } from '@mui/material';
 // Components
 import AccountBtn from './AccountBtn';
 // Styles
@@ -20,12 +21,20 @@ import styles from './HeaderStyle';
  * @return {React.ReactElement} Render header
  */
 function Header(): React.ReactElement {
+  // React Router
+  const navigate = useNavigate();
+
+  // Function to move to the main page
+  const toMain = React.useCallback((): void => {
+    navigate('/');
+  }, [navigate]);
+
   return (
     <Box sx={styles.headerWrapper}>
       <Stack direction="row" sx={styles.headerTitleWrapper}>
-        <Typography variant="h5" component="div" sx={styles.websiteTitle}>
+        <Link variant="h5" underline="none" sx={styles.websiteTitle} onClick={toMain}>
           Badgers Game Ticket
-        </Typography>
+        </Link>
       </Stack>
       <AccountBtn />
     </Box>
