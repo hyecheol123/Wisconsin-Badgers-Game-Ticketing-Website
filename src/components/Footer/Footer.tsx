@@ -32,8 +32,7 @@ function Footer(): React.ReactElement {
         variant="body2"
         sx={{ ...styles.boldText, ...styles.text }}
       >
-        THIS IS NOT A REAL WEBSITE TO PURCHASE THE TICKETS FOR WISCONSIN BADGERS
-        GAMES.
+        THIS IS NOT A REAL TICKETING WEBSITE FOR WISCONSIN BADGERS GAMES.
       </Typography>
       <Link
         align="center"

@@ -41,7 +41,7 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(woff|woff2)$/,
+        test: /\.(woff|woff2|jpeg|jpg)$/,
         type: 'asset/resource',
       },
     ],

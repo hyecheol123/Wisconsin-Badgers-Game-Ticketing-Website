@@ -25,11 +25,46 @@ import Login from './Login';
 import ChangePW from './ChangePW';
 
 // MUI Theme (Setup Font family)
+const breakpoints = {
+  values: {
+    xs: 0,
+    sm: 600,
+    md: 900,
+    lg: 1200,
+    xl: 1536,
+  },
+};
 const theme = createTheme({
+  breakpoints,
   typography: {
     fontFamily: '"IBM Plex Sans KR", sans-serif',
+    h3: {
+      fontWeight: 500,
+      fontSize: '2.5em',
+      [`@media screen and (max-width: ${breakpoints.values.md}px)`]: {
+        fontSize: '2em',
+      },
+      '@media screen and (max-width: 300px)': {
+        // Galaxy Fold
+        fontSize: '1.55em',
+      },
+    },
     h5: {
       fontWeight: 500,
+      [`@media screen and (max-width: ${breakpoints.values.md}px)`]: {
+        fontSize: '1.3em',
+      },
+    },
+    h6: {
+      [`@media screen and (max-width: 300px)`]: {
+        // Galaxy Fold
+        fontSize: '1.0em',
+      },
+    },
+    body2: {
+      [`@media screen and (max-width: ${breakpoints.values.md}px)`]: {
+        fontSize: '0.825em',
+      },
     },
   },
   palette: {
