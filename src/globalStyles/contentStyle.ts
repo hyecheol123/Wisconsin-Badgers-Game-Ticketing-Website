@@ -12,6 +12,7 @@ const contentStyle = {
     maxWidth: '1024px',
     minHeight: '87.5vh',
   },
+  PageTitle: { margin: '1.5em 0' },
 };
 
 export default contentStyle;
