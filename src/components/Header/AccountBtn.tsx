@@ -75,7 +75,10 @@ function AccountBtn(): React.ReactElement {
 
     // Close User Menu
     handleCloseUserMenu();
-  }, [loginContext, handleCloseUserMenu]);
+
+    // Navigate to the main menu
+    navigate('/');
+  }, [loginContext, handleCloseUserMenu, navigate]);
 
   return (
     <Box sx={styles.Wrapper}>
