@@ -58,8 +58,8 @@ function AccountBtn(): React.ReactElement {
   }, []);
 
   // function to move to the my page screen
-  const myPage = React.useCallback((): void => {
-    navigate('/mypage');
+  const myTickets = React.useCallback((): void => {
+    navigate('/tickets');
   }, [navigate]);
 
   // function to move to the changePW screen
@@ -91,8 +91,8 @@ function AccountBtn(): React.ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleCloseUserMenu}
       >
-        <MenuItem onClick={myPage}>
-          <Typography textAlign="center">My Page</Typography>
+        <MenuItem onClick={myTickets}>
+          <Typography textAlign="center">My Tickets</Typography>
         </MenuItem>
         <Divider />
         <MenuItem onClick={changePW}>

@@ -189,7 +189,7 @@ function App(): React.ReactElement {
             path="/changePW"
             element={loginContext.initialized ? <ChangePW /> : <Loading />}
           />
-          <Route path="/mypage" element={<div>My Page</div>} />
+          <Route path="/tickets" element={<div>My Tickets</div>} />
           <Route
             path="/signup"
             element={loginContext.initialized ? <SignUp /> : <Loading />}
