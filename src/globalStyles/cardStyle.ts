@@ -1,11 +1,17 @@
 /**
- * Define Game List Page Style
+ * Define Card Styles
+ *   - Used in Game List and Purchased Ticket page
  *
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
 
-const GamesStyle = {
-  GameCard: { display: 'flex', margin: '1.5em 0', cursor: 'pointer' },
+const cardStyle = {
+  Card: {
+    minHeight: '195px',
+    display: 'flex',
+    margin: '1.5em 0',
+    cursor: 'pointer',
+  },
   ImageBox: {
     flex: '0 2 175px',
     display: 'flex',
@@ -21,4 +27,4 @@ const GamesStyle = {
   DateText: { flexGrow: 1 },
 };
 
-export default GamesStyle;
+export default cardStyle;

@@ -1,5 +1,5 @@
 /**
- * Game List Page
+ * Purchased Tickets Page
  *
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
@@ -7,32 +7,50 @@
 // React
 import React from 'react';
 // React Router
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // Material UI
 import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+// Custom Hooks to load Login Context
+import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
 
 /**
- * React functional component for Game List
+ * React functional component for MyTickets
  *
- * @return {React.ReactElement} Renders Game Lists
+ * @return {React.ReactElement} Renders My Tickets
  */
-function Games(): React.ReactElement {
+function MyTickets(): React.ReactElement {
   // React Router
+  const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Function to move to the game detail page
-  const gameDetail = React.useCallback(
-    (gameId: number): void => {
-      navigate(`/games/${gameId}`);
-    },
-    [navigate]
-  );
+  // State
+  const loginContext = useLoginContext();
+
+  // Function to direct user to previous location
+  const goBack = React.useCallback((): void => {
+    const prevLocation = (state as { prevLocation: string })?.prevLocation;
+    if (prevLocation) {
+      navigate(prevLocation);
+    } else {
+      navigate('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Check whether user is signed in or not
+  // Only allow for signed in user
+  React.useEffect(() => {
+    if (!loginContext.login) {
+      goBack();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -40,21 +58,11 @@ function Games(): React.ReactElement {
       <Box sx={contentStyle.ContentWrapper}>
         <Box sx={contentStyle.Content}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            Game Lists (2022)
-          </Typography>
-          <Typography variant="body1" align="left">
-            This is the full list of this season's home game. Click the game to
-            see more detail and to purchase the tickets.
+            Purchased Tickets
           </Typography>
           {new Array(6).fill(0).map((_value, index) => {
             return (
-              <Card
-                key={index}
-                sx={cardStyle.Card}
-                onClick={(): void => {
-                  gameDetail(index);
-                }}
-              >
+              <Card key={index} sx={{ ...cardStyle.Card }}>
                 <Box sx={cardStyle.ImageBox}>
                   <CardMedia
                     component="img"
@@ -72,9 +80,12 @@ function Games(): React.ReactElement {
                     component="div"
                     sx={cardStyle.DateText}
                   >
-                    Nov. 11 2022
+                    Nov. 11. 2022
                   </Typography>
-                  <Typography variant="body1">Remaining Seats: xxx</Typography>
+                  <Typography variant="body1">Platinum Ticket: 2</Typography>
+                  <Typography variant="body1">Gold Ticket: 1</Typography>
+                  <Typography variant="body1">Silver Ticket: 1</Typography>
+                  <Typography variant="body1">Bronze Ticket: 2</Typography>
                 </CardContent>
               </Card>
             );
@@ -86,4 +97,4 @@ function Games(): React.ReactElement {
   );
 }
 
-export default Games;
+export default MyTickets;
