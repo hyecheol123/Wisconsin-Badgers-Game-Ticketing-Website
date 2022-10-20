@@ -49,7 +49,7 @@ function LandingPage(): React.ReactElement {
               variant="h3"
               align="center"
               component="div"
-              sx={landingPageStyle.Title}
+              sx={contentStyle.PageTitle}
             >
               Welcome to Wisconsin Badgers Ticketing Site!
             </Typography>
