@@ -15,6 +15,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
+import GamesStyle from './GamesStyle';
 
 /**
  * React functional component for Game List
@@ -49,33 +50,19 @@ function Games(): React.ReactElement {
             return (
               <Card
                 key={`${index}`}
-                sx={{ display: 'flex', margin: '1em 0' }}
+                sx={GamesStyle.GameCard}
                 onClick={(): void => {
                   gameDetail(index);
                 }}
               >
-                <Box
-                  sx={{
-                    flex: '0 2 200px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginRight: '0.25em'
-                  }}
-                >
+                <Box sx={GamesStyle.ImageBox}>
                   <CardMedia
                     component="img"
                     image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
                     alt="Wisconsin Badgers Logo"
                   />
                 </Box>
-                <CardContent
-                  sx={{
-                    flex: '1 0 auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    backgroundColor: 'whitesmoke'
-                  }}
-                >
+                <CardContent sx={GamesStyle.InfoBox}>
                   <Typography variant="h5" component="div">
                     vs Opponent Team
                   </Typography>
@@ -83,7 +70,7 @@ function Games(): React.ReactElement {
                     variant="subtitle1"
                     color="text.secondary"
                     component="div"
-                    sx={{flexGrow: 1}}
+                    sx={GamesStyle.DateText}
                   >
                     Nov. 11 2022
                   </Typography>
