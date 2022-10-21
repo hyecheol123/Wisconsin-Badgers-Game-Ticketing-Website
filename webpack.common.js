@@ -10,7 +10,6 @@ module.exports = {
   target: ['browserslist', 'es5'],
   output: {
     path: join(__dirname, 'dist'),
-    publicPath: '/',
     filename: '[name].[contenthash:8].bundle.js',
     chunkFilename: '[name].[contenthash:8].chunk.bundle.js',
     clean: true,

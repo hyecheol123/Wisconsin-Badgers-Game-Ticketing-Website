@@ -16,4 +16,7 @@ module.exports = merge(common, {
     new webpack.HotModuleReplacementPlugin(),
     new RefreshWebpackPlugin(),
   ],
+  output: {
+    publicPath: '/'
+  }
 });

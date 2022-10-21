@@ -12,7 +12,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { blue, red } from '@mui/material/colors';
 // Router
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 // Font
 import '@fontsource/ibm-plex-sans-kr/300.css';
 import '@fontsource/ibm-plex-sans-kr/400.css';
