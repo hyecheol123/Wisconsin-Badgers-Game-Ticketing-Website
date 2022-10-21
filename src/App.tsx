@@ -27,6 +27,7 @@ import TermsAndCondition from './TermsAndCondition';
 import SignUp from './SignUp';
 import Games from './Games';
 import MyTickets from './MyTickets';
+import GameDetail from './GameDetail';
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {
@@ -208,7 +209,10 @@ function App(): React.ReactElement {
             path="/games"
             element={loginContext.initialized ? <Games /> : <Loading />}
           />
-          <Route path="/games/:gameid" element={<div>Game Detail</div>} />
+          <Route
+            path="/games/:gameid"
+            element={loginContext.initialized ? <GameDetail /> : <Loading />}
+          />
         </Routes>
       </Router>
     </ThemeProvider>

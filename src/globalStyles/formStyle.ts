@@ -7,6 +7,7 @@
 const formStyle = {
   Title: { margin: '1em 0', fontWeight: 500 },
   RequiredTitle: { color: 'red', marginLeft: '2px' },
+  Button: { margin: '0 0.5em' },
 };
 
 export default formStyle;
