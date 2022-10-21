@@ -10,6 +10,7 @@ import React from 'react';
 import {
   Box,
   Button,
+  Divider,
   MenuItem,
   TextField,
   Typography,
@@ -126,10 +127,12 @@ function GameDetail(): React.ReactElement {
               >
                 Purchase Tickets
               </Typography>
+              <Typography variant="body1" align="left">The ticket grade indicates the distance between the seat and the field. The platinum ticket is closest to the field, followed by gold, silver, and bronze.</Typography>
+              <Divider sx={GameDetailStyle.PurchaseDivider}/>
               <TextField
                 select
                 fullWidth
-                label="Platinum Tickets"
+                label="Platinum Tickets - $80"
                 value={platinumTicketCnt}
                 onChange={onPlatinumTicketCntChange}
                 helperText="Please choose the number of platinum tickets you want to purchase"
@@ -147,7 +150,7 @@ function GameDetail(): React.ReactElement {
               <TextField
                 select
                 fullWidth
-                label="Gold Tickets"
+                label="Gold Tickets - $65"
                 value={goldTicketCnt}
                 onChange={onGoldTicketCntChange}
                 helperText="Please choose the number of gold tickets you want to purchase"
@@ -162,7 +165,7 @@ function GameDetail(): React.ReactElement {
               <TextField
                 select
                 fullWidth
-                label="Silver Tickets"
+                label="Silver Tickets - $50"
                 value={silverTicketCnt}
                 onChange={onSilverTicketCntChange}
                 helperText="Please choose the number of silver tickets you want to purchase"
@@ -177,7 +180,7 @@ function GameDetail(): React.ReactElement {
               <TextField
                 select
                 fullWidth
-                label="Bronze Tickets"
+                label="Bronze Tickets - $35"
                 value={bronzeTicketCnt}
                 onChange={onBronzeTicketCntChange}
                 helperText="Please choose the number of bronze tickets you want to purchase"
