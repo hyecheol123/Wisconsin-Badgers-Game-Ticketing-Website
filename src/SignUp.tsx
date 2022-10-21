@@ -18,6 +18,7 @@ import textFieldState from './globalTypes/FormTextFieldState';
 // Style
 import contentStyle from './globalStyles/contentStyle';
 import formStyle from './globalStyles/formStyle';
+import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 
 /**
  * React functional component for SignUp
@@ -122,15 +123,6 @@ function SignUp(): React.ReactElement {
 
   // Generate style of formBox
   const theme = useTheme();
-  const formBoxStyleProvider = (error: boolean): React.CSSProperties => {
-    return {
-      margin: '1em 0.5em',
-      padding: '15px',
-      backgroundColor: 'aliceblue',
-      borderRadius: '10px',
-      border: error ? `2px solid ${theme.palette.error.main}` : undefined,
-    };
-  };
 
   // Function to submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
@@ -189,7 +181,7 @@ function SignUp(): React.ReactElement {
             Sign Up
           </Typography>
           <form onSubmit={formSubmit}>
-            <Box sx={formBoxStyleProvider(name.error)}>
+            <Box sx={formBoxStyleProvider(theme, name.error)}>
               <Box>
                 <Typography variant="h6" component="span">
                   Name
@@ -215,7 +207,7 @@ function SignUp(): React.ReactElement {
                 onKeyPress={onKeyPress}
               />
             </Box>
-            <Box sx={formBoxStyleProvider(email.error)}>
+            <Box sx={formBoxStyleProvider(theme, email.error)}>
               <Box>
                 <Typography variant="h6" component="span">
                   Email
@@ -241,7 +233,7 @@ function SignUp(): React.ReactElement {
                 onKeyPress={onKeyPress}
               />
             </Box>
-            <Box sx={formBoxStyleProvider(password.error)}>
+            <Box sx={formBoxStyleProvider(theme, password.error)}>
               <Box>
                 <Typography variant="h6" component="span">
                   Password
@@ -268,7 +260,7 @@ function SignUp(): React.ReactElement {
                 onKeyPress={onKeyPress}
               />
             </Box>
-            <Box sx={formBoxStyleProvider(passwordRetyped.error)}>
+            <Box sx={formBoxStyleProvider(theme, passwordRetyped.error)}>
               <Box>
                 <Typography variant="h6" component="span">
                   Retype Password
@@ -295,7 +287,7 @@ function SignUp(): React.ReactElement {
                 onKeyPress={onKeyPress}
               />
             </Box>
-            <Box sx={formBoxStyleProvider(phoneNumber.error)}>
+            <Box sx={formBoxStyleProvider(theme, phoneNumber.error)}>
               <Typography variant="h6">Phone Number</Typography>
               <TextField
                 disabled={disabled}
@@ -322,7 +314,7 @@ function SignUp(): React.ReactElement {
                 type="submit"
                 color="secondary"
                 variant="contained"
-                sx={{ margin: '0 0.5em' }}
+                sx={formStyle.Button}
               >
                 Submit
               </Button>
@@ -330,7 +322,7 @@ function SignUp(): React.ReactElement {
                 color="primary"
                 variant="contained"
                 onClick={newForm}
-                sx={{ margin: '0 0.5em' }}
+                sx={formStyle.Button}
               >
                 Create New Form
               </Button>
