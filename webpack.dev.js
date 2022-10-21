@@ -17,6 +17,6 @@ module.exports = merge(common, {
     new RefreshWebpackPlugin(),
   ],
   output: {
-    publicPath: '/'
-  }
+    publicPath: '/',
+  },
 });
