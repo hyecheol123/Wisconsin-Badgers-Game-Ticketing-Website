@@ -1,10 +1,10 @@
 /**
- * Define refund modal style
+ * Define global  modal style
  *
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
 
-const RefundModalStyle = {
+const modalStyle = {
   ModalWrapper: {
     position: 'absolute',
     top: '50%',
@@ -33,4 +33,4 @@ const RefundModalStyle = {
   },
 };
 
-export default RefundModalStyle;
+export default modalStyle;

@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 // Style
-import RefundModalStyle from './RefundModalStyle';
+import RefundModalStyle from '../../globalStyles/modalStyle';
 
 // Type for the component's props
 type RefundModalProps = {
