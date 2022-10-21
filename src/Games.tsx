@@ -63,14 +63,14 @@ function Games(): React.ReactElement {
                   />
                 </Box>
                 <CardContent sx={cardStyle.InfoBox}>
-                  <Typography variant="h5" component="div">
+                  <Typography variant="h5" component="div" noWrap>
                     vs Opponent Team
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     color="text.secondary"
                     component="div"
-                    sx={cardStyle.DateText}
+                    sx={cardStyle.GrowText}
                   >
                     Nov. 11 2022
                   </Typography>

@@ -7,7 +7,7 @@
 
 const cardStyle = {
   Card: {
-    minHeight: '195px',
+    minHeight: '240px',
     display: 'flex',
     margin: '1.5em 0',
     cursor: 'pointer',
@@ -17,6 +17,7 @@ const cardStyle = {
     display: 'flex',
     alignItems: 'center',
     marginRight: '0.25em',
+    minWidth: '50px',
   },
   InfoBox: {
     flex: '1 0 auto',
@@ -24,7 +25,8 @@ const cardStyle = {
     flexDirection: 'column',
     backgroundColor: 'whitesmoke',
   },
-  DateText: { flexGrow: 1 },
+  GrowText: { flexGrow: 1 },
+  Button: { marginTop: '0.5em' },
 };
 
 export default cardStyle;

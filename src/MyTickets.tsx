@@ -9,7 +9,14 @@ import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
 // Material UI
-import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+} from '@mui/material';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -18,6 +25,7 @@ import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
+import RefundModal from './components/RefundModal/RefundModal';
 
 /**
  * React functional component for MyTickets
@@ -31,6 +39,7 @@ function MyTickets(): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
+  const [refundModalOpen, setRefundModalOpen] = React.useState<boolean>(false);
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -52,6 +61,14 @@ function MyTickets(): React.ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Function to open/close refund modal
+  const openRefundModal = React.useCallback((): void => {
+    setRefundModalOpen(true);
+  }, []);
+  const closeRefundModal = React.useCallback((): void => {
+    setRefundModalOpen(false);
+  }, []);
+
   return (
     <>
       <Header />
@@ -62,7 +79,7 @@ function MyTickets(): React.ReactElement {
           </Typography>
           {new Array(6).fill(0).map((_value, index) => {
             return (
-              <Card key={index} sx={{ ...cardStyle.Card }}>
+              <Card key={index} sx={{ ...cardStyle.Card, cursor: 'auto' }}>
                 <Box sx={cardStyle.ImageBox}>
                   <CardMedia
                     component="img"
@@ -71,26 +88,41 @@ function MyTickets(): React.ReactElement {
                   />
                 </Box>
                 <CardContent sx={cardStyle.InfoBox}>
-                  <Typography variant="h5" component="div">
+                  <Typography variant="h5" component="div" noWrap>
                     vs Opponent Team
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     color="text.secondary"
                     component="div"
-                    sx={cardStyle.DateText}
                   >
                     Nov. 11. 2022
                   </Typography>
                   <Typography variant="body1">Platinum Ticket: 2</Typography>
                   <Typography variant="body1">Gold Ticket: 1</Typography>
                   <Typography variant="body1">Silver Ticket: 1</Typography>
-                  <Typography variant="body1">Bronze Ticket: 2</Typography>
+                  <Typography variant="body1" sx={cardStyle.GrowText}>
+                    Bronze Ticket: 2
+                  </Typography>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    sx={cardStyle.Button}
+                    onClick={openRefundModal}
+                  >
+                    Request Refund
+                  </Button>
                 </CardContent>
               </Card>
             );
           })}
         </Box>
+        {refundModalOpen && (
+          <RefundModal
+            isOpen={refundModalOpen}
+            handleClose={closeRefundModal}
+          />
+        )}
       </Box>
       <Footer />
     </>
