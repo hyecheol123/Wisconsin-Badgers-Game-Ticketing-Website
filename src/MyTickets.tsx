@@ -96,7 +96,7 @@ function MyTickets(): React.ReactElement {
                     color="text.secondary"
                     component="div"
                   >
-                    Nov. 11. 2022
+                    Nov. 11. 2022 | Confirmation: 1234
                   </Typography>
                   <Typography variant="body1">Platinum Ticket: 2</Typography>
                   <Typography variant="body1">Gold Ticket: 1</Typography>

@@ -28,6 +28,7 @@ import SignUp from './SignUp';
 import Games from './Games';
 import MyTickets from './MyTickets';
 import GameDetail from './GameDetail';
+import PurchaseConfirmation from './PurchaseConfirmation';
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {
@@ -215,7 +216,9 @@ function App(): React.ReactElement {
           />
           <Route
             path="/confirm/:purchaseid"
-            element={<div>Purchase Confirmation</div>}
+            element={
+              loginContext.initialized ? <PurchaseConfirmation /> : <Loading />
+            }
           />
         </Routes>
       </Router>
