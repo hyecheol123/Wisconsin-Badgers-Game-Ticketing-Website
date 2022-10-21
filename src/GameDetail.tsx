@@ -6,6 +6,8 @@
 
 // React
 import React from 'react';
+// React Router
+import { useLocation, useNavigate } from 'react-router-dom';
 // Material UI
 import {
   Box,
@@ -19,11 +21,14 @@ import {
 // Component
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+// Custom Hooks to load Login Context
+import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import GameDetailStyle from './GameDetailStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 import formStyle from './globalStyles/formStyle';
+import PurchaseModal from './components/PurchaseModal/PurchaseModal';
 
 /**
  * React functional component for Game Detail Page
@@ -31,15 +36,22 @@ import formStyle from './globalStyles/formStyle';
  * @return {React.ReactElement} Renders Game Detail page
  */
 function GameDetail(): React.ReactElement {
+  // React Router
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // Generate style for the form box
   const theme = useTheme();
 
   // States
   // const [error, _setError] = React.useState<boolean>(false);
+  const loginContext = useLoginContext();
   const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(0);
   const [goldTicketCnt, setGoldTicketCnt] = React.useState<number>(0);
   const [silverTicketCnt, setSilverTicketCnt] = React.useState<number>(0);
   const [bronzeTicketCnt, setBronzeTicketCnt] = React.useState<number>(0);
+  const [purchaseModalOpen, setPurchaseModalOpen] =
+    React.useState<boolean>(false);
 
   // EventHandlers to modify form input
   const onPlatinumTicketCntChange: React.ChangeEventHandler = React.useCallback(
@@ -66,6 +78,20 @@ function GameDetail(): React.ReactElement {
     },
     []
   );
+
+  // Event Handler for user to continue purchase the ticket
+  const openPurchaseModal = React.useCallback((): void => {
+    // When user is not logged in, redirect user to the login page
+    if (!loginContext.login) {
+      navigate('/login', { state: { prevLocation: location.pathname } });
+    }
+
+    // User logged in, open modal
+    setPurchaseModalOpen(true);
+  }, [navigate, location.pathname, loginContext.login]);
+  const closePurchaseModal = React.useCallback((): void => {
+    setPurchaseModalOpen(false);
+  }, []);
 
   const availableTicketCnt = [
     { value: 0, label: 0 },
@@ -199,8 +225,8 @@ function GameDetail(): React.ReactElement {
               <Box sx={GameDetailStyle.ButtonWrapper}>
                 <Button
                   color="primary"
-                  type="submit"
                   variant="contained"
+                  onClick={openPurchaseModal}
                   sx={formStyle.Button}
                 >
                   Purchase
@@ -215,6 +241,18 @@ function GameDetail(): React.ReactElement {
               </Box>
             </Box>
           </Box>
+          {purchaseModalOpen && (
+            <PurchaseModal
+              isOpen={purchaseModalOpen}
+              handleClose={closePurchaseModal}
+              ticketCounts={{
+                platinum: platinumTicketCnt,
+                gold: goldTicketCnt,
+                silver: silverTicketCnt,
+                bronze: bronzeTicketCnt,
+              }}
+            />
+          )}
         </Box>
       </Box>
       <Footer />

@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 // Style
-import RefundModalStyle from '../../globalStyles/modalStyle';
+import modalStyle from '../../globalStyles/modalStyle';
 
 // Type for the component's props
 type RefundModalProps = {
@@ -143,12 +143,12 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
         componentsProps={{ backdrop: { transitionDuration: 500 } }}
       >
         <Fade in={isOpen}>
-          <Box sx={RefundModalStyle.ModalWrapper}>
+          <Box sx={modalStyle.ModalWrapper}>
             <Typography
               variant="h6"
               component="div"
               align="center"
-              sx={RefundModalStyle.ModalTitle}
+              sx={modalStyle.ModalTitle}
             >
               Request Refund
             </Typography>
@@ -156,7 +156,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
               You are requesting refund for Nov. 11. 2022's game with Opponent
               Team.
             </Typography>
-            <Divider sx={RefundModalStyle.DividerMargin} />
+            <Divider sx={modalStyle.DividerMargin} />
             <Box>
               <form onSubmit={formSubmit}>
                 <TextField
@@ -166,7 +166,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   value={platinumTicketCnt}
                   onChange={onPlatinumTicketCntChange}
                   helperText="Please choose the number of platinum tickets you want to refund"
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 >
                   {uptoTwo.map((option) => (
                     <MenuItem
@@ -184,7 +184,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   value={goldTicketCnt}
                   onChange={onGoldTicketCntChange}
                   helperText="Please choose the number of gold tickets you want to refund"
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 >
                   {uptoTwo.slice(0, 2).map((option) => (
                     <MenuItem key={`Gold-${option.value}`} value={option.value}>
@@ -199,7 +199,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   value={goldTicketCnt}
                   onChange={onSilverTicketCntChange}
                   helperText="Please choose the number of silver tickets you want to refund"
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 >
                   {uptoTwo.slice(0, 2).map((option) => (
                     <MenuItem
@@ -217,7 +217,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   value={bronzeTicketCnt}
                   onChange={onBronzeTicketCntChange}
                   helperText="Please choose the number of bronze tickets you want to refund"
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 >
                   {uptoTwo.map((option) => (
                     <MenuItem
@@ -237,7 +237,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   onChange={onNoteChange}
                   onKeyPress={onKeyPress}
                   placeholder="Why do you request refund?"
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 />
                 <FormControlLabel
                   control={
@@ -247,9 +247,9 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                     />
                   }
                   label="Refund may take upto 3 weeks."
-                  sx={RefundModalStyle.TextFieldMargin}
+                  sx={modalStyle.TextFieldMargin}
                 />
-                <Box sx={RefundModalStyle.ButtonWrapper}>
+                <Box sx={modalStyle.ButtonWrapper}>
                   <Button
                     type="submit"
                     color="primary"
