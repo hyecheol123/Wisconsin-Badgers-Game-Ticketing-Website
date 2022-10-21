@@ -14,7 +14,7 @@ const GameDetailStyle = {
   Team: { display: 'flex', alignItems: 'center' },
   TeamImage: { maxHeight: '100%', maxWidth: '100%' },
   PurchaseFormTitle: { margin: '0.25em 0' },
-  PurchaseDivider: {margin: '1em 0'},
+  PurchaseDivider: { margin: '1em 0' },
   Selection: { margin: '1em 0' },
   ButtonWrapper: {
     display: 'inline-flex',

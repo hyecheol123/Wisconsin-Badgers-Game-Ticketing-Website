@@ -127,8 +127,12 @@ function GameDetail(): React.ReactElement {
               >
                 Purchase Tickets
               </Typography>
-              <Typography variant="body1" align="left">The ticket grade indicates the distance between the seat and the field. The platinum ticket is closest to the field, followed by gold, silver, and bronze.</Typography>
-              <Divider sx={GameDetailStyle.PurchaseDivider}/>
+              <Typography variant="body1" align="left">
+                The ticket grade indicates the distance between the seat and the
+                field. The platinum ticket is closest to the field, followed by
+                gold, silver, and bronze.
+              </Typography>
+              <Divider sx={GameDetailStyle.PurchaseDivider} />
               <TextField
                 select
                 fullWidth
