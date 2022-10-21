@@ -16,8 +16,8 @@ Note that this is not the official ticketing website for Wisdonsin Badgers.
   - [x] Setup Milestone
 
 **Milestone 2a** *(Oct. 21. 2022)*: Design/Locate React Components (Design Demo)  
-  - [ ] All Components are implemented (Including states)
-  - [ ] Routing
+  - [x] All Components are implemented (Including states)
+  - [x] Routing
 
 **Milestone 2b** *(Nov. 16. 2022)*: Functioning Demo with Demo Dataset  
   - [ ] Add demo dataset (a JSON file)
