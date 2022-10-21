@@ -15,7 +15,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
-import GamesStyle from './GamesStyle';
+import cardStyle from './globalStyles/cardStyle';
 
 /**
  * React functional component for Game List
@@ -49,28 +49,28 @@ function Games(): React.ReactElement {
           {new Array(6).fill(0).map((_value, index) => {
             return (
               <Card
-                key={`${index}`}
-                sx={GamesStyle.GameCard}
+                key={index}
+                sx={cardStyle.Card}
                 onClick={(): void => {
                   gameDetail(index);
                 }}
               >
-                <Box sx={GamesStyle.ImageBox}>
+                <Box sx={cardStyle.ImageBox}>
                   <CardMedia
                     component="img"
                     image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
                     alt="Wisconsin Badgers Logo"
                   />
                 </Box>
-                <CardContent sx={GamesStyle.InfoBox}>
-                  <Typography variant="h5" component="div">
+                <CardContent sx={cardStyle.InfoBox}>
+                  <Typography variant="h5" component="div" noWrap>
                     vs Opponent Team
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     color="text.secondary"
                     component="div"
-                    sx={GamesStyle.DateText}
+                    sx={cardStyle.GrowText}
                   >
                     Nov. 11 2022
                   </Typography>
