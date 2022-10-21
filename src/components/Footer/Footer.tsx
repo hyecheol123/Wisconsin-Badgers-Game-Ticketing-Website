@@ -31,8 +31,7 @@ function Footer(): React.ReactElement {
     <Box sx={styles.footerWrapper}>
       <Typography align="center" variant="body2" sx={styles.text}>
         Copyright © 2019 By{' '}
-        <Link href="https://hcjang.com">Hyecheol (Jerry) Jang</Link>
-        .
+        <Link href="https://hcjang.com">Hyecheol (Jerry) Jang</Link>.
       </Typography>
       <Typography
         align="center"
