@@ -213,6 +213,10 @@ function App(): React.ReactElement {
             path="/games/:gameid"
             element={loginContext.initialized ? <GameDetail /> : <Loading />}
           />
+          <Route
+            path="/confirm/:purchaseid"
+            element={<div>Purchase Confirmation</div>}
+          />
         </Routes>
       </Router>
     </ThemeProvider>

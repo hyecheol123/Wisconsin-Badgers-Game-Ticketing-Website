@@ -12,7 +12,7 @@ const modalStyle = {
     transform: 'translate(-50%, -50%)',
     height: '90%',
     width: '90%',
-    maxWidth: '450px',
+    maxWidth: '500px',
     p: 1,
     bgcolor: 'background.paper',
     border: '2px solid black',
