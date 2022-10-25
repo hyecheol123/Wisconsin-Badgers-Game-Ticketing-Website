@@ -23,7 +23,8 @@
     "dev": "webpack serve --mode development --open --hot --config ./webpack.dev.js --progress",
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.prod.js --progress",
     "lint": "prettier --check \"**/*.{js,jsx,css,ts,tsx}\" && eslint \"**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "prettier --write \"**/*.{js,jsx,css,ts,tsx}\" && eslint --fix \"**/*.{js,jsx,ts,tsx}\""
+    "lint:fix": "prettier --write \"**/*.{js,jsx,css,ts,tsx}\" && eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
+    "deploy": "firebase deploy"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css}": [
@@ -43,13 +44,14 @@
   "bugs": {
     "url": "https://github.com/hyecheol123/Wisconsin-Badger-Game-Ticketing-Website/issues"
   },
-  "homepage": "https://github.com/hyecheol123/Wisconsin-Badger-Game-Ticketing-Website#readme",
+  "homepage": "https://wisconsin-badgers-ticket.web.app/",
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@fontsource/ibm-plex-sans-kr": "^4.5.11",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.9",
+    "firebase-tools": "^11.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.2"
