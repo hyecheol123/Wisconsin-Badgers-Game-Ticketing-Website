@@ -7,7 +7,7 @@ With the consent of instructor, we decide to use React and MUI, not vanilla Java
 
 Note that this is not the official ticketing website for Wisdonsin Badgers.
 
-*Full Website: Not Yet Published*
+Website: https://wisconsin-badgers-ticket.web.app/
 
 ## Milestones and Significant Due Dates
 
@@ -61,6 +61,7 @@ These are used to lint, test, build, and run teh code.
 2. `lint:fix`: lint the code and try auto-fix.
 3. `dev`: Run webpack dev server
 4. `build`: Build website based on the `browserslint`. (destination: `dist` Directory)
+5. `deploy`: Deploy website to Google Firebase Hosting
 
 No tests are implemented.
 To enforce code styling, inspect and lint the codes on commit and push.
@@ -74,6 +75,8 @@ For code styling rules and deploy configurations, please refer to the setup file
 
 Used `React 18.2.0` and `React Router 6.4.2`.
 Also utilize `Material UI (MUI) Library v5.10.9` for elegant design.
+
+Use `Google Firebase Hosting` to deploy this website.
 
 ## Database Structure & Schema
 
