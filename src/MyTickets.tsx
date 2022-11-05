@@ -20,12 +20,14 @@ import {
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
-import RefundModal from './components/RefundModal/RefundModal';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
+const RefundModal = React.lazy(
+  () => import('./components/RefundModal/RefundModal')
+);
 
 /**
  * React functional component for MyTickets

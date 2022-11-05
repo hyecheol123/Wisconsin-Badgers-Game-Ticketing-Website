@@ -21,14 +21,14 @@ import '@fontsource/ibm-plex-sans-kr/500.css';
 import Loading from './components/Loading/Loading';
 import { LoginContextProvider, useLoginContext } from './LoginContext';
 import LandingPage from './LandingPage';
-import Login from './Login';
-import ChangePW from './ChangePW';
-import TermsAndCondition from './TermsAndCondition';
-import SignUp from './SignUp';
-import Games from './Games';
-import MyTickets from './MyTickets';
-import GameDetail from './GameDetail';
-import PurchaseConfirmation from './PurchaseConfirmation';
+const Login = React.lazy(() => import('./Login'));
+const ChangePW = React.lazy(() => import('./ChangePW'));
+const TermsAndCondition = React.lazy(() => import('./TermsAndCondition'));
+const SignUp = React.lazy(() => import('./SignUp'));
+const Games = React.lazy(() => import('./Games'));
+const MyTickets = React.lazy(() => import('./MyTickets'));
+const GameDetail = React.lazy(() => import('./GameDetail'));
+const PurchaseConfirmation = React.lazy(() => import('./PurchaseConfirmation'));
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {

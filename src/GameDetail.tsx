@@ -28,7 +28,9 @@ import contentStyle from './globalStyles/contentStyle';
 import GameDetailStyle from './GameDetailStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 import formStyle from './globalStyles/formStyle';
-import PurchaseModal from './components/PurchaseModal/PurchaseModal';
+const PurchaseModal = React.lazy(
+  () => import('./components/PurchaseModal/PurchaseModal')
+);
 
 /**
  * React functional component for Game Detail Page
