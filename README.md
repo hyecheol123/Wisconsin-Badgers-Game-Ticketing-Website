@@ -93,6 +93,7 @@ User: {
 Game: {
   id: string
   opponent: string
+  opponentImgUrl: string
   year: number
   month: number
   day: number
