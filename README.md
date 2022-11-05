@@ -80,4 +80,13 @@ Use `Google Firebase Hosting` to deploy this website.
 
 ## Database Structure & Schema
 
+```
+User: {
+  email: string
+  password: string (hashed?)
+  name: string
+  phoneNumber: string (optional)
+}
+```
+
 **TODO: Tentative (Firebase) / UML**

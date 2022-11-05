@@ -25,6 +25,13 @@ import { useLoginContext } from './LoginContext';
 // Global Style
 import styles from './globalStyles/accountStyle';
 
+// Demo data
+const loginUser = {
+  email: 'tickets@badgergames.com',
+  password: 'password',
+  name: 'Test User',
+};
+
 /**
  * React Functional Component to generate Login view
  *
@@ -37,7 +44,7 @@ function Login(): React.ReactElement {
   // State
   const loginContext = useLoginContext();
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [username, setUsername] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
@@ -58,9 +65,9 @@ function Login(): React.ReactElement {
   }, [navigate]);
 
   // EventHandlers to modify form input
-  const onUsernameChange: React.ChangeEventHandler = React.useCallback(
+  const onEmailChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent): void => {
-      setUsername((event.target as HTMLInputElement).value);
+      setEmail((event.target as HTMLInputElement).value);
     },
     []
   );
@@ -73,16 +80,32 @@ function Login(): React.ReactElement {
 
   // Helper function to check input
   const inputCheck = React.useCallback((): boolean => {
-    // Username/Password is not valid when it is empty
-    if (username === '' || password === '') {
+    // Email/Password is not valid when it is empty
+    if (email === '' || password === '') {
       setError({
         error: true,
-        msg: 'Both username and password are required field!',
+        msg: 'Both email and password are required field!',
       });
       return false;
     }
+
+    // Email format check
+    if (
+      !email
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
+    ) {
+      setError({
+        error: true,
+        msg: 'Not a vaild email format',
+      });
+      return false;
+    }
+
     return true;
-  }, [username, password]);
+  }, [email, password]);
 
   // Submit Event Handler
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
@@ -96,16 +119,25 @@ function Login(): React.ReactElement {
         return;
       }
 
-      // TODO: Submit Login API Request
-      console.log('Login Request');
-      console.log(username);
-      console.log(password);
-      localStorage.setItem('LOGIN', 'yes');
-      loginContext.dispatch({ type: 'LOGIN' });
-      goBack();
+      // Submit Login API Request
+      if (
+        email.toLowerCase() === loginUser.email &&
+        password === loginUser.password
+      ) {
+        localStorage.setItem('LOGIN', 'yes');
+        loginContext.dispatch({ type: 'LOGIN' });
+        goBack();
+      } else {
+        // Login Fail Error Message
+        setError({
+          error: true,
+          msg: 'Cannot find user with given email and password',
+        });
+        setDisabled(false);
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [inputCheck, loginContext, password, username]
+    [inputCheck, loginContext, password, email]
   );
 
   // EventHandler to close alert
@@ -135,10 +167,10 @@ function Login(): React.ReactElement {
                 size="small"
                 variant="outlined"
                 color="primary"
-                label="username"
+                label="email"
                 margin="normal"
-                value={username}
-                onChange={onUsernameChange}
+                value={email}
+                onChange={onEmailChange}
                 sx={styles.TextField}
               ></TextField>
               <TextField
