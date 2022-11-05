@@ -24,6 +24,13 @@ import { useLoginContext } from './LoginContext';
 // Global Style
 import styles from './globalStyles/accountStyle';
 
+// Demo data
+const loginUser = {
+  email: 'tickets@badgergames.com',
+  password: 'password',
+  name: 'Test User',
+};
+
 /**
  * React functional component to generate change password view
  *
@@ -105,11 +112,18 @@ function ChangePW(): React.ReactElement {
         return;
       }
 
-      // TODO: Submit API Request
-      console.log('Change PW Request');
-      console.log(currentPW);
-      console.log(newPW, confirmPW);
-      goBack();
+      // Submit API Request
+      if (currentPW === loginUser.password) {
+        console.log(currentPW, newPW, confirmPW);
+        goBack();
+      } else {
+        // Change PW Fail Error Message
+        setError({
+          error: true,
+          msg: 'Current Password Not Correct',
+        });
+        setDisabled(false);
+      }
     },
     [confirmPW, currentPW, newPW, goBack, inputCheck]
   );
