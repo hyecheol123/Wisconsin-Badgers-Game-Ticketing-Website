@@ -24,7 +24,8 @@
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.prod.js --progress",
     "lint": "prettier --check \"**/*.{js,jsx,css,ts,tsx}\" && eslint \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "prettier --write \"**/*.{js,jsx,css,ts,tsx}\" && eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "predeploy": "npm run build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css}": [
