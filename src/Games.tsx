@@ -61,7 +61,7 @@ function Games(): React.ReactElement {
       <Box sx={contentStyle.ContentWrapper}>
         <Box sx={contentStyle.Content}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            Game Lists (2022)
+            Game Lists (2023)
           </Typography>
           <Typography variant="body1" align="left">
             This is the full list of this season's home game. Click the game to
@@ -104,9 +104,9 @@ function Games(): React.ReactElement {
                   <Typography variant="body1">{`Remaining Seats: ${getNumRemainingSeat(
                     value.id,
                     value.ticketSalesCount.platinum +
-                      value.ticketSalesCount.gold +
-                      value.ticketSalesCount.silver +
-                      value.ticketSalesCount.bronze
+                    value.ticketSalesCount.gold +
+                    value.ticketSalesCount.silver +
+                    value.ticketSalesCount.bronze
                   )}`}</Typography>
                 </CardContent>
               </Card>
