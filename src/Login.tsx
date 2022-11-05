@@ -26,11 +26,7 @@ import { useLoginContext } from './LoginContext';
 import styles from './globalStyles/accountStyle';
 
 // Demo data
-const loginUser = {
-  email: 'tickets@badgergames.com',
-  password: 'password',
-  name: 'Test User',
-};
+import loginUser from './demoData/loginUser';
 
 /**
  * React Functional Component to generate Login view
