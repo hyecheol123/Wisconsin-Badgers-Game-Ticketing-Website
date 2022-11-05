@@ -99,7 +99,13 @@ Game: {
   day: number
   hour: number (optional)
   minute: number (optional)
-  ticketSalesCount: {
+  ticketCount: {
+    platinum: number
+    gold: number
+    silver: number
+    bronze: number
+  }
+  ticketPrice: {
     platinum: number
     gold: number
     silver: number
