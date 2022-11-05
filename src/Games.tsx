@@ -104,9 +104,9 @@ function Games(): React.ReactElement {
                   <Typography variant="body1">{`Remaining Seats: ${getNumRemainingSeat(
                     value.id,
                     value.ticketSalesCount.platinum +
-                    value.ticketSalesCount.gold +
-                    value.ticketSalesCount.silver +
-                    value.ticketSalesCount.bronze
+                      value.ticketSalesCount.gold +
+                      value.ticketSalesCount.silver +
+                      value.ticketSalesCount.bronze
                   )}`}</Typography>
                 </CardContent>
               </Card>
