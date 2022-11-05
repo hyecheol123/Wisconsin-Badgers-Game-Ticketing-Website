@@ -89,4 +89,35 @@ User: {
 }
 ```
 
+```
+Game: {
+  id: string
+  opponent: string
+  year: number
+  month: number
+  day: number
+  hour: number (optional)
+  minute: number (optional)
+  ticketSalesCount: {
+    platinum: number
+    gold: number
+    silver: number
+    bronze: number
+  }
+}
+```
+
+```
+Purchase: {
+  id: string
+  gameId: string
+  tickets: {
+    platinum: number
+    gold: number
+    silver: number
+    bronze: number
+  }
+}
+```
+
 **TODO: Tentative (Firebase) / UML**
