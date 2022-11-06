@@ -160,15 +160,16 @@ function GameDetail(): React.ReactElement {
 
   // Date String
   const gameDate = new Date(game.year, game.month - 1, game.day);
-  let gameDateString = gameDate.toLocaleDateString('en-US', {
+  const gameDateString = gameDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
+  let gameDateStringForDetailPage = gameDateString;
   if (game.hour === undefined) {
-    gameDateString += ' TBD';
+    gameDateStringForDetailPage += ' TBD';
   } else {
-    gameDateString += ` ${game.hour}:${game.minute}`;
+    gameDateStringForDetailPage += ` ${game.hour}:${game.minute}`;
   }
 
   return (
@@ -180,7 +181,7 @@ function GameDetail(): React.ReactElement {
             {`vs ${game.opponent}`}
           </Typography>
           <Typography variant="body1" align="left">
-            <strong>Date:</strong> {gameDateString}
+            <strong>Date:</strong> {gameDateStringForDetailPage}
           </Typography>
           <Typography variant="body1" align="left">
             <strong>Stadium:</strong> Camp Randall Stadium
@@ -353,11 +354,19 @@ function GameDetail(): React.ReactElement {
             <PurchaseModal
               isOpen={purchaseModalOpen}
               handleClose={closePurchaseModal}
+              gameDateString={gameDateString}
+              opponentTeam={game.opponent}
               ticketCounts={{
                 platinum: platinumTicketCnt,
                 gold: goldTicketCnt,
                 silver: silverTicketCnt,
                 bronze: bronzeTicketCnt,
+              }}
+              ticketPrice={{
+                platinum: game.ticketPrice.platinum,
+                gold: game.ticketPrice.gold,
+                silver: game.ticketPrice.silver,
+                bronze: game.ticketPrice.bronze,
               }}
             />
           )}

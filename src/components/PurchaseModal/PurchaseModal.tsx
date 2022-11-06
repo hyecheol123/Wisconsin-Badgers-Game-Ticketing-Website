@@ -29,11 +29,19 @@ import modalStyle from '../../globalStyles/modalStyle';
 type PurchaseModalProps = {
   isOpen: boolean;
   handleClose: () => void;
+  gameDateString: string;
+  opponentTeam: string;
   ticketCounts: {
-    platinum?: number;
-    gold?: number;
-    silver?: number;
-    bronze?: number;
+    platinum: number;
+    gold: number;
+    silver: number;
+    bronze: number;
+  };
+  ticketPrice: {
+    platinum: number;
+    gold: number;
+    silver: number;
+    bronze: number;
   };
 };
 
@@ -44,7 +52,8 @@ type PurchaseModalProps = {
  * @return {React.ReactElement} Renders Purchase Modal
  */
 function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
-  const { isOpen, handleClose } = props;
+  const { isOpen, handleClose, gameDateString } = props;
+  const { opponentTeam, ticketCounts, ticketPrice } = props;
 
   // React Router
   const navigate = useNavigate();
@@ -151,6 +160,18 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
     []
   );
 
+  const totalNumTickets =
+    ticketCounts.platinum +
+    ticketCounts.gold +
+    ticketCounts.silver +
+    ticketCounts.bronze;
+
+  const totalTicketPrice =
+    ticketCounts.platinum * ticketPrice.platinum +
+    ticketCounts.gold * ticketPrice.gold +
+    ticketCounts.silver * ticketPrice.silver +
+    ticketCounts.bronze * ticketPrice.bronze;
+
   const month = [
     { value: 0, label: 'Choose Month' },
     { value: 1, label: '01 - January' },
@@ -187,33 +208,37 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
               Payment
             </Typography>
             <Typography variant="h6" component="div" align="center">
-              Nov. 11. 2022 | vs Opponent Team
+              {`${gameDateString} | vs ${opponentTeam}`}
             </Typography>
             <ul>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Platinum Ticket ($80): </strong>2
+                  <strong>{`Platinum Ticket ($${ticketPrice.platinum}): `}</strong>
+                  {ticketCounts.platinum}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Gold Ticket ($65): </strong>1
+                  <strong>{`Gold Ticket ($${ticketPrice.gold}): `}</strong>
+                  {ticketCounts.gold}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Silver Ticket ($50): </strong>1
+                  <strong>{`Silver Ticket ($${ticketPrice.silver}): `}</strong>
+                  {ticketCounts.silver}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Bronze Ticket ($35): </strong>2
+                  <strong>{`Bronze Ticket ($${ticketPrice.bronze}): `}</strong>
+                  {ticketCounts.bronze}
                 </Typography>
               </li>
             </ul>
             <Typography>
-              To purchase <strong>6 tickets</strong> listed above, you have to
-              pay <strong>$345</strong>.
+              To purchase <strong>{`${totalNumTickets} tickets`}</strong> listed
+              above, you have to pay <strong>{`$${totalTicketPrice}`}</strong>.
             </Typography>
             <Divider sx={modalStyle.DividerMargin} />
             <Box>
