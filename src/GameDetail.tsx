@@ -224,9 +224,9 @@ function GameDetail(): React.ReactElement {
                 {[
                   ...Array(
                     Math.max(
-                      Math.max(
+                      Math.min(
                         maxTicketPerPurchase - currSelected,
-                        maxSeats.platinum - currSelected
+                        maxSeats.platinum
                       ) + 1,
                       platinumTicketCnt + 1
                     )
@@ -249,9 +249,9 @@ function GameDetail(): React.ReactElement {
                 {[
                   ...Array(
                     Math.max(
-                      Math.max(
+                      Math.min(
                         maxTicketPerPurchase - currSelected,
-                        maxSeats.gold - currSelected
+                        maxSeats.gold
                       ) + 1,
                       goldTicketCnt + 1
                     )
@@ -274,9 +274,9 @@ function GameDetail(): React.ReactElement {
                 {[
                   ...Array(
                     Math.max(
-                      Math.max(
+                      Math.min(
                         maxTicketPerPurchase - currSelected,
-                        maxSeats.silver - currSelected
+                        maxSeats.silver
                       ) + 1,
                       silverTicketCnt + 1
                     )
@@ -299,9 +299,9 @@ function GameDetail(): React.ReactElement {
                 {[
                   ...Array(
                     Math.max(
-                      Math.max(
+                      Math.min(
                         maxTicketPerPurchase - currSelected,
-                        maxSeats.bronze - currSelected
+                        maxSeats.bronze
                       ) + 1,
                       bronzeTicketCnt + 1
                     )
