@@ -171,7 +171,7 @@ function GameDetail(): React.ReactElement {
             <Box sx={GameDetailStyle.TeamContent}>
               <Box sx={GameDetailStyle.Team}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
+                  src="https://d1qwqe1acr1rnz.cloudfront.net/images/logos/Wisconsin.png"
                   alt="Wisconsin Badgers"
                   style={GameDetailStyle.TeamImage}
                 />
