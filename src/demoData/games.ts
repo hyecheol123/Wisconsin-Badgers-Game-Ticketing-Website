@@ -7,11 +7,17 @@ const games = [
     year: 2023,
     month: 9,
     day: 2,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
   {
@@ -22,11 +28,17 @@ const games = [
     year: 2023,
     month: 9,
     day: 16,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
   {
@@ -37,11 +49,17 @@ const games = [
     year: 2023,
     month: 10,
     day: 7,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 10,
       gold: 10,
       silver: 10,
       bronze: 10,
+    },
+    ticketPrice: {
+      platinum: 90,
+      gold: 75,
+      silver: 60,
+      bronze: 45,
     },
   },
   {
@@ -52,11 +70,17 @@ const games = [
     year: 2023,
     month: 10,
     day: 14,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
   {
@@ -67,11 +91,17 @@ const games = [
     year: 2023,
     month: 10,
     day: 28,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
   {
@@ -82,11 +112,17 @@ const games = [
     year: 2023,
     month: 11,
     day: 11,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
   {
@@ -97,11 +133,17 @@ const games = [
     year: 2023,
     month: 11,
     day: 18,
-    ticketSalesCount: {
+    ticketCount: {
       platinum: 5000,
       gold: 15000,
       silver: 30000,
       bronze: 30000,
+    },
+    ticketPrice: {
+      platinum: 80,
+      gold: 65,
+      silver: 50,
+      bronze: 35,
     },
   },
 ];
