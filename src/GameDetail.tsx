@@ -7,7 +7,7 @@
 // React
 import React from 'react';
 // React Router
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Material UI
 import {
   Box,
@@ -28,6 +28,10 @@ import contentStyle from './globalStyles/contentStyle';
 import GameDetailStyle from './GameDetailStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 import formStyle from './globalStyles/formStyle';
+
+// Demo data
+import games from './demoData/games';
+import purchases from './demoData/purchases';
 const PurchaseModal = React.lazy(
   () => import('./components/PurchaseModal/PurchaseModal')
 );
@@ -41,6 +45,8 @@ function GameDetail(): React.ReactElement {
   // React Router
   const location = useLocation();
   const navigate = useNavigate();
+  // Retrieve gameId from the path
+  const { gameid } = useParams();
 
   // Generate style for the form box
   const theme = useTheme();
@@ -95,15 +101,57 @@ function GameDetail(): React.ReactElement {
     setPurchaseModalOpen(false);
   }, []);
 
-  const availableTicketCnt = [
-    { value: 0, label: 0 },
-    { value: 1, label: 1 },
-    { value: 2, label: 2 },
-    { value: 3, label: 3 },
-    { value: 4, label: 4 },
-    { value: 5, label: 5 },
-    { value: 6, label: 6 },
-  ];
+  // Retrieve game information
+  let game;
+  for (const item of games) {
+    if (item.id === gameid) {
+      game = item;
+    }
+  }
+  // Game not found
+  if (game === undefined) {
+    // TODO: 404 Error
+    return <div>404</div>;
+  }
+
+  // Calculate the remaining seat for each game tier using purchase history
+  const maxSeats = {
+    platinum: game.ticketCount.platinum,
+    gold: game.ticketCount.gold,
+    silver: game.ticketCount.silver,
+    bronze: game.ticketCount.bronze,
+  };
+  for (const purchase of purchases) {
+    if (purchase.gameId === game.id) {
+      maxSeats.platinum -= purchase.tickets.platinum;
+      maxSeats.gold -= purchase.tickets.gold;
+      maxSeats.silver -= purchase.tickets.silver;
+      maxSeats.bronze -= purchase.tickets.bronze;
+    }
+  }
+  // Maximum ticket for each
+  const maxTicketPerPurchase = 6;
+  // eslint-disable-next-line guard-for-in
+  for (const seatTier in maxSeats) {
+    maxSeats[seatTier] = Math.min(maxSeats[seatTier], maxTicketPerPurchase);
+  }
+
+  // Date String
+  const gameDate = new Date(game.year, game.month - 1, game.day);
+  let gameDateString = gameDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  if (game.hour === undefined) {
+    gameDateString += ' TBD';
+  } else {
+    gameDateString += ` ${game.hour}:${game.minute}`;
+  }
+
+  // current selected number of tickets
+  const currSelected =
+    platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
 
   return (
     <>
@@ -111,10 +159,10 @@ function GameDetail(): React.ReactElement {
       <Box sx={contentStyle.ContentWrapper}>
         <Box sx={contentStyle.Content}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            vs Opponent Team
+            {`vs ${game.opponent}`}
           </Typography>
           <Typography variant="body1" align="left">
-            <strong>Date:</strong> Nov. 11. 2022 16:00
+            <strong>Date:</strong> {gameDateString}
           </Typography>
           <Typography variant="body1" align="left">
             <strong>Stadium:</strong> Camp Randall Stadium
@@ -135,8 +183,8 @@ function GameDetail(): React.ReactElement {
             <Box sx={GameDetailStyle.TeamContent}>
               <Box sx={GameDetailStyle.Team}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
-                  alt="Wisconsin Badgers"
+                  src={game.opponentImgUrl}
+                  alt={game.opponent}
                   style={GameDetailStyle.TeamImage}
                 />
               </Box>
@@ -159,68 +207,108 @@ function GameDetail(): React.ReactElement {
                 The ticket grade indicates the distance between the seat and the
                 field. The platinum ticket is closest to the field, followed by
                 gold, silver, and bronze.
+                <br />
+                Up to <strong>6 tickets</strong> can be purchased in one
+                transaction.
               </Typography>
               <Divider sx={GameDetailStyle.PurchaseDivider} />
               <TextField
                 select
                 fullWidth
-                label="Platinum Tickets - $80"
+                label={`Platinum Tickets - $${game.ticketPrice.platinum}`}
                 value={platinumTicketCnt}
                 onChange={onPlatinumTicketCntChange}
                 helperText="Please choose the number of platinum tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem
-                    key={`Platinum-${option.value}`}
-                    value={option.value}
-                  >
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.max(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.platinum - currSelected
+                      ) + 1,
+                      platinumTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Platinum-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Gold Tickets - $65"
+                label={`Gold Tickets - $${game.ticketPrice.gold}`}
                 value={goldTicketCnt}
                 onChange={onGoldTicketCntChange}
                 helperText="Please choose the number of gold tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Gold-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.max(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.gold - currSelected
+                      ) + 1,
+                      goldTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Gold-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Silver Tickets - $50"
+                label={`Silver Tickets - $${game.ticketPrice.silver}`}
                 value={silverTicketCnt}
                 onChange={onSilverTicketCntChange}
                 helperText="Please choose the number of silver tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Silver-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.max(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.silver - currSelected
+                      ) + 1,
+                      silverTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Silver-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Bronze Tickets - $35"
+                label={`Bronze Tickets - $${game.ticketPrice.bronze}`}
                 value={bronzeTicketCnt}
                 onChange={onBronzeTicketCntChange}
                 helperText="Please choose the number of bronze tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Bronze-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.max(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.bronze - currSelected
+                      ) + 1,
+                      bronzeTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Bronze-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
