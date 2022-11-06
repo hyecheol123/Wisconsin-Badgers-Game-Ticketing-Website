@@ -10,14 +10,18 @@ import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Material UI
 import {
+  Alert,
   Box,
   Button,
   Divider,
   MenuItem,
+  Snackbar,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material';
+// Global Style
+import Error from './globalTypes/FormError';
 // Component
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -52,7 +56,6 @@ function GameDetail(): React.ReactElement {
   const theme = useTheme();
 
   // States
-  // const [error, _setError] = React.useState<boolean>(false);
   const loginContext = useLoginContext();
   const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(0);
   const [goldTicketCnt, setGoldTicketCnt] = React.useState<number>(0);
@@ -60,6 +63,7 @@ function GameDetail(): React.ReactElement {
   const [bronzeTicketCnt, setBronzeTicketCnt] = React.useState<number>(0);
   const [purchaseModalOpen, setPurchaseModalOpen] =
     React.useState<boolean>(false);
+  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
   // EventHandlers to modify form input
   const onPlatinumTicketCntChange: React.ChangeEventHandler = React.useCallback(
@@ -87,16 +91,34 @@ function GameDetail(): React.ReactElement {
     []
   );
 
+  // EventHandler to close alert
+  const closeAlert = React.useCallback(() => {
+    setError({ error: false, msg: '' });
+  }, []);
+
+  // current selected number of tickets
+  const currSelected =
+    platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
+
   // Event Handler for user to continue purchase the ticket
   const openPurchaseModal = React.useCallback((): void => {
     // When user is not logged in, redirect user to the login page
     if (!loginContext.login) {
       navigate('/login', { state: { prevLocation: location.pathname } });
+    } else {
+      // If there is no seats selected (total number of selected seat is 0),
+      // Else if total selected seat is greater than 6,
+      // do not open modal and alert user
+      if (currSelected < 1) {
+        setError({ error: true, msg: 'Should select at least one seat' });
+      } else if (currSelected > 6) {
+        setError({ error: true, msg: 'Cannot choose more than 6 seats' });
+      } else {
+        // Open modal if there is no error
+        setPurchaseModalOpen(true);
+      }
     }
-
-    // User logged in, open modal
-    setPurchaseModalOpen(true);
-  }, [navigate, location.pathname, loginContext.login]);
+  }, [navigate, location.pathname, loginContext.login, currSelected]);
   const closePurchaseModal = React.useCallback((): void => {
     setPurchaseModalOpen(false);
   }, []);
@@ -148,10 +170,6 @@ function GameDetail(): React.ReactElement {
   } else {
     gameDateString += ` ${game.hour}:${game.minute}`;
   }
-
-  // current selected number of tickets
-  const currSelected =
-    platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
 
   return (
     <>
@@ -345,6 +363,16 @@ function GameDetail(): React.ReactElement {
           )}
         </Box>
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.error}
+        onClose={closeAlert}
+      >
+        <Alert onClose={closeAlert} severity="error">
+          {error.msg}
+        </Alert>
+      </Snackbar>
       <Footer />
     </>
   );
