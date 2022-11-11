@@ -157,7 +157,7 @@ function GameDetail(): React.ReactElement {
     bronze: game.ticketCount.bronze,
   };
   for (const purchase of purchases) {
-    if (purchase.gameId === game.id) {
+    if (purchase.isValid && purchase.gameId === game.id) {
       maxSeats.platinum -= purchase.tickets.platinum;
       maxSeats.gold -= purchase.tickets.gold;
       maxSeats.silver -= purchase.tickets.silver;
