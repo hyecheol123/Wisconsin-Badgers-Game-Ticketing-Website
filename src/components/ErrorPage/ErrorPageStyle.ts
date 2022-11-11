@@ -15,11 +15,11 @@ const ErrorPageStyle = {
   ErrorCode: {
     fontSize: '8em',
     fontWeight: 500,
-    lineHeight: 0.8
+    lineHeight: 0.8,
   },
   MessageTitle: {
     textTransform: 'uppercase',
-    lineHeight: 3
+    lineHeight: 3,
   },
 };
 
