@@ -19,7 +19,7 @@ import cardStyle from './globalStyles/cardStyle';
 
 // Demo data
 import games from './demoData/games';
-import purchases from './demoData/purchases';
+import defaultPurchases from './demoData/purchases';
 
 /**
  * React functional component for Game List
@@ -29,6 +29,14 @@ import purchases from './demoData/purchases';
 function Games(): React.ReactElement {
   // React Router
   const navigate = useNavigate();
+
+  // Get purchases (Demo Data)
+  const purchases = React.useMemo(() => {
+    const newPurchasesString = sessionStorage.getItem('purchases');
+    const newPurchases =
+      newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+    return [...defaultPurchases, ...newPurchases];
+  }, []);
 
   // Function to move to the game detail page
   const gameDetail = React.useCallback(
@@ -52,7 +60,7 @@ function Games(): React.ReactElement {
 
       return numTotalSeats;
     },
-    []
+    [purchases]
   );
 
   return (

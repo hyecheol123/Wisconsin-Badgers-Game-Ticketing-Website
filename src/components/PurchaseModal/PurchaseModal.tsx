@@ -4,6 +4,9 @@
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
 
+// CryptoJS
+import sha512 from 'crypto-js/sha512';
+import base64 from 'crypto-js/enc-base64';
 // React
 import React from 'react';
 // React Router
@@ -28,11 +31,14 @@ import {
 import Error from '../../globalTypes/FormError';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
+// Demo Data
+import loginUser from '../../demoData/loginUser';
 
 // Type for the component's props
 type PurchaseModalProps = {
   isOpen: boolean;
   handleClose: () => void;
+  gameId: string;
   gameDateString: string;
   opponentTeam: string;
   ticketCounts: {
@@ -56,7 +62,7 @@ type PurchaseModalProps = {
  * @return {React.ReactElement} Renders Purchase Modal
  */
 function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
-  const { isOpen, handleClose, gameDateString } = props;
+  const { isOpen, handleClose, gameId, gameDateString } = props;
   const { opponentTeam, ticketCounts, ticketPrice } = props;
 
   // React Router
@@ -234,14 +240,36 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         return;
       }
 
-      // TODO: Submit API request
-      console.log('Purchase');
-      console.log('Detail hided for security reasons');
+      // TODO: Submit API request - TODO: Check for the remaining seats again
+      // Pretend we get payment
+      const newPurchasesString = sessionStorage.getItem('purchases');
+      const newPurchases =
+        newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+      const purchaseId = sha512(
+        loginUser.email + gameId + new Date().toISOString()
+      )
+        .toString(base64)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+      const purchaseInfo = {
+        id: purchaseId,
+        gameId: gameId,
+        userEmail: loginUser.email,
+        tickets: {
+          platinum: ticketCounts.platinum,
+          gold: ticketCounts.gold,
+          silver: ticketCounts.silver,
+          bronze: ticketCounts.bronze,
+        },
+      };
+      newPurchases.push(purchaseInfo);
+      sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
 
       // Redirect to the confirmation page
       handleClose();
       navigate('/confirm/1234');
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [validityCheck]
   );
 

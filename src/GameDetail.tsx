@@ -35,7 +35,7 @@ import formStyle from './globalStyles/formStyle';
 
 // Demo data
 import games from './demoData/games';
-import purchases from './demoData/purchases';
+import defaultPurchases from './demoData/purchases';
 const PurchaseModal = React.lazy(
   () => import('./components/PurchaseModal/PurchaseModal')
 );
@@ -51,6 +51,12 @@ function GameDetail(): React.ReactElement {
   const navigate = useNavigate();
   // Retrieve gameId from the path
   const { gameid } = useParams();
+
+  // Get purchases (demo data)
+  const newPurchasesString = sessionStorage.getItem('purchases');
+  const newPurchases =
+    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+  const purchases = [...defaultPurchases, ...newPurchases];
 
   // Generate style for the form box
   const theme = useTheme();
@@ -354,6 +360,7 @@ function GameDetail(): React.ReactElement {
             <PurchaseModal
               isOpen={purchaseModalOpen}
               handleClose={closePurchaseModal}
+              gameId={gameid}
               gameDateString={gameDateString}
               opponentTeam={game.opponent}
               ticketCounts={{

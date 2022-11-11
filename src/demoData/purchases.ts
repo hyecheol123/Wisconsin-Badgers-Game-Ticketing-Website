@@ -1,7 +1,11 @@
+// Need to combine the following array with the array saved in
+//   the sessionStorage with key 'purchases'
+
 const purchases = [
   {
     id: 'g1-001',
     gameId: '1',
+    userEmail: 'demo@abc.com',
     tickets: {
       platinum: 0,
       gold: 2,
@@ -12,6 +16,7 @@ const purchases = [
   {
     id: 'g1-002',
     gameId: '1',
+    userEmail: 'tickets@badgergames.com',
     tickets: {
       platinum: 3,
       gold: 2,
@@ -22,6 +27,7 @@ const purchases = [
   {
     id: 'g1-003',
     gameId: '1',
+    userEmail: 'tickets@badgergames.com',
     tickets: {
       platinum: 0,
       gold: 1,
@@ -32,6 +38,7 @@ const purchases = [
   {
     id: 'g2-001',
     gameId: '2',
+    userEmail: 'demo@abc.com',
     tickets: {
       platinum: 6,
       gold: 0,
@@ -42,6 +49,7 @@ const purchases = [
   {
     id: 'g2-002',
     gameId: '2',
+    userEmail: 'tickets@badgergames.com',
     tickets: {
       platinum: 3,
       gold: 2,
@@ -52,6 +60,7 @@ const purchases = [
   {
     id: 'g3-001',
     gameId: '3',
+    userEmail: 'demo@abc.com',
     tickets: {
       platinum: 0,
       gold: 6,
@@ -62,6 +71,7 @@ const purchases = [
   {
     id: 'g3-002',
     gameId: '3',
+    userEmail: 'demo@abc.com',
     tickets: {
       platinum: 3,
       gold: 2,
@@ -72,6 +82,7 @@ const purchases = [
   {
     id: 'g3-003',
     gameId: '3',
+    userEmail: 'tickets@badgergames.com',
     tickets: {
       platinum: 0,
       gold: 2,
@@ -82,6 +93,7 @@ const purchases = [
   {
     id: 'g7-001',
     gameId: '7',
+    userEmail: 'tickets@badgergames.com',
     tickets: {
       platinum: 0,
       gold: 2,
