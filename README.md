@@ -23,7 +23,7 @@ Website: https://wisconsin-badgers-ticket.web.app/
   - [ ] Add demo dataset (a JSON file)
   - [ ] Display demo data accordingly
   - [ ] Interact with user's input
-  - [ ] Optimize Loading - Lazy Loading
+  - [x] Optimize Loading - Lazy Loading
 
 **Milestone 3** *(Dec. 07. 2022)*: Full Website  
   - [ ] Firebase database
@@ -80,53 +80,58 @@ Use `Google Firebase Hosting` to deploy this website.
 
 ## Database Structure & Schema
 
-```
-User: {
-  email: string
-  password: string (hashed?)
-  name: string
-  phoneNumber: string (optional)
-}
-```
+**Data Diagram**
+![ERD.png](img/ERD.png)
 
-```
-Game: {
-  id: string
-  opponent: string
-  opponentImgUrl: string
-  year: number
-  month: number
-  day: number
-  hour: number (optional)
-  minute: number (optional)
-  ticketCount: {
-    platinum: number
-    gold: number
-    silver: number
-    bronze: number
-  }
-  ticketPrice: {
-    platinum: number
-    gold: number
-    silver: number
-    bronze: number
-  }
-}
-```
+<details>
+  <summary>Type Definition for each Collection</summary>
 
-```
-Purchase: {
-  id: string
-  gameId: string
-  userEmail: string
-  isValid: boolean
-  tickets: {
-    platinum: number
-    gold: number
-    silver: number
-    bronze: number
+  ```
+  User: {
+    email: string
+    password: string (hashed?)
+    name: string
+    phoneNumber: string (optional)
   }
-}
-```
+  ```
 
-**TODO: Tentative (Firebase) / UML**
+  ```
+  Game: {
+    id: string
+    opponent: string
+    opponentImgUrl: string
+    year: number
+    month: number
+    day: number
+    hour: number (optional)
+    minute: number (optional)
+    ticketCount: {
+      platinum: number
+      gold: number
+      silver: number
+      bronze: number
+    }
+    ticketPrice: {
+      platinum: number
+      gold: number
+      silver: number
+      bronze: number
+    }
+  }
+  ```
+
+  ```
+  Purchase: {
+    id: string
+    gameId: string
+    userEmail: string
+    isValid: boolean
+    tickets: {
+      platinum: number
+      gold: number
+      silver: number
+      bronze: number
+    }
+  }
+  ```
+</details>
