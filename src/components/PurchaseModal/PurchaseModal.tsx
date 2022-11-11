@@ -106,20 +106,26 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onCardNumberChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      if (!/([^0-9])/.test(event.target.value)) {
-        setCardNumber(event.target.value);
-      } else {
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
         setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 16) {
+        setError({ error: true, msg: 'Card Number should be 15 ~ 16 digits' });
+      } else {
+        setCardNumber(value);
       }
     },
     []
   );
   const onSecurityCodeChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      if (!/([^0-9])/.test(event.target.value)) {
-        setSecurityCode(event.target.value);
-      } else {
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
         setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 4) {
+        setError({ error: true, msg: 'Security code should be 3 ~ 4 digits' });
+      } else {
+        setSecurityCode(value);
       }
     },
     []
@@ -132,10 +138,13 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onExpYearChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      if (!/([^0-9])/.test(event.target.value)) {
-        setExpYear(event.target.value);
-      } else {
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
         setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 4) {
+        setError({ error: true, msg: 'Expiry year should be 4 digits' });
+      } else {
+        setExpYear(value);
       }
     },
     []
@@ -158,7 +167,60 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
     setError({ error: false, msg: '' });
   }, []);
 
-  // TODO: Validity Check
+  // Validity Check
+  const validityCheck = React.useCallback((): boolean => {
+    // Agree to all terms and conditions
+    if (!acknowledge || !noResell || !refundTerm) {
+      setError({
+        error: true,
+        msg: 'You have to agree with all terms and conditions',
+      });
+      return false;
+    }
+
+    // No empty field
+    if (
+      cardNumber.length === 0 ||
+      securityCode.length === 0 ||
+      expMonth === 0 ||
+      expYear.length === 0 ||
+      cardHolder.length === 0 ||
+      zipCode.length === 0
+    ) {
+      setError({ error: true, msg: 'All fields are required' });
+      return false;
+    }
+
+    // Card number should have either 15 or 16 digits
+    if (cardNumber.length > 16 || cardNumber.length < 15) {
+      setError({ error: true, msg: 'Card Number should be 15 ~ 16 digits' });
+      return false;
+    }
+
+    // card security code should be either 3 or 4 digits
+    if (securityCode.length > 4 || securityCode.length < 3) {
+      setError({ error: true, msg: 'Security code should be 3 ~ 4 digits' });
+      return false;
+    }
+
+    // exp year should be 4 digit
+    if (expYear.length !== 4) {
+      setError({ error: true, msg: 'Expiry year should be 4 digits' });
+      return false;
+    }
+
+    return true;
+  }, [
+    acknowledge,
+    cardHolder,
+    cardNumber,
+    expMonth,
+    expYear,
+    noResell,
+    refundTerm,
+    securityCode,
+    zipCode,
+  ]);
 
   // Submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
@@ -166,7 +228,11 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       event.preventDefault();
       setDisabled(true);
 
-      // TODO: Validity Check
+      // Validity Check
+      if (!validityCheck()) {
+        setDisabled(false);
+        return;
+      }
 
       // TODO: Submit API request
       console.log('Purchase');
@@ -176,7 +242,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       handleClose();
       navigate('/confirm/1234');
     },
-    []
+    [validityCheck]
   );
 
   const totalNumTickets =
