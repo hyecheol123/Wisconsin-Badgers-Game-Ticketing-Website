@@ -118,6 +118,7 @@ Game: {
 Purchase: {
   id: string
   gameId: string
+  userEmail: string
   tickets: {
     platinum: number
     gold: number
