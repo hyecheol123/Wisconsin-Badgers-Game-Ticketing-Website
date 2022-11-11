@@ -7,7 +7,7 @@
 // React
 import React from 'react';
 // React Router
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 // Material UI
 import { Box, Link, Typography } from '@mui/material';
 // Styles
