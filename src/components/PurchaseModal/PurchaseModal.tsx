@@ -250,7 +250,9 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       )
         .toString(base64)
         .replace(/\+/g, '-')
-        .replace(/\//g, '_');
+        .replace(/\//g, '_')
+        .substring(0, 18)
+        .toLowerCase();
       const purchaseInfo = {
         id: purchaseId,
         gameId: gameId,
@@ -268,7 +270,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
 
       // Redirect to the confirmation page
       handleClose();
-      navigate('/confirm/1234');
+      navigate(`/confirm/${purchaseId}`);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [validityCheck]
