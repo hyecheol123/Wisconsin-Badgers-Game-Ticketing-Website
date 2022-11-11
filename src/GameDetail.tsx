@@ -25,6 +25,7 @@ import Error from './globalTypes/FormError';
 // Component
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import ErrorPage from './components/ErrorPage/ErrorPage';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
@@ -138,8 +139,14 @@ function GameDetail(): React.ReactElement {
   }
   // Game not found
   if (game === undefined) {
-    // TODO: 404 Error
-    return <div>404</div>;
+    // 404 Error
+    return (
+      <>
+        <Header />
+        <ErrorPage errorCode={404} />
+        <Footer />
+      </>
+    );
   }
 
   // Calculate the remaining seat for each game tier using purchase history
