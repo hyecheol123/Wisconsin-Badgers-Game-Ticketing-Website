@@ -15,6 +15,8 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Type
 import textFieldState from './globalTypes/FormTextFieldState';
+// Custom Hook to load LoginContext
+import { useLoginContext } from './LoginContext';
 // Style
 import contentStyle from './globalStyles/contentStyle';
 import formStyle from './globalStyles/formStyle';
@@ -31,6 +33,7 @@ function SignUp(): React.ReactElement {
   const navigate = useNavigate();
 
   // States
+  const loginContext = useLoginContext();
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [name, setName] = React.useState<textFieldState>({
     value: '',
@@ -171,6 +174,19 @@ function SignUp(): React.ReactElement {
     },
     []
   );
+
+  // Check for whether user already logged in or not
+  React.useEffect(() => {
+    if (loginContext.login) {
+      const prevLocation = (state as { prevLocation: string })?.prevLocation;
+      if (prevLocation) {
+        navigate(prevLocation);
+      } else {
+        navigate('/');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginContext]);
 
   return (
     <>

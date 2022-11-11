@@ -147,7 +147,7 @@ function Login(): React.ReactElement {
       goBack();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loginContext]);
 
   return (
     <>
