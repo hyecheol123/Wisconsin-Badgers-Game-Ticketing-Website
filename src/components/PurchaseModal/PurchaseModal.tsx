@@ -255,6 +255,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         id: purchaseId,
         gameId: gameId,
         userEmail: loginUser.email,
+        isValid: true,
         tickets: {
           platinum: ticketCounts.platinum,
           gold: ticketCounts.gold,

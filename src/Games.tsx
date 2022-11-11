@@ -50,7 +50,7 @@ function Games(): React.ReactElement {
   const getNumRemainingSeat = React.useCallback(
     (gameId: string, numTotalSeats: number): number => {
       for (const purchase of purchases) {
-        if (purchase.gameId === gameId) {
+        if (purchase.isValid && purchase.gameId === gameId) {
           numTotalSeats -= purchase.tickets.platinum;
           numTotalSeats -= purchase.tickets.gold;
           numTotalSeats -= purchase.tickets.silver;
