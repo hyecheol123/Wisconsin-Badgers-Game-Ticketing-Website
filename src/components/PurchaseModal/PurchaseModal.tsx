@@ -10,6 +10,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 // Material UI
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -19,9 +20,12 @@ import {
   FormControlLabel,
   MenuItem,
   Modal,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
+// Global Type
+import Error from '../../globalTypes/FormError';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
 
@@ -60,17 +64,16 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
 
   // State
   const [cardNumber, setCardNumber] = React.useState<string>('');
-  const [securityCode, setSecurityCode] = React.useState<number | undefined>(
-    undefined
-  );
+  const [securityCode, setSecurityCode] = React.useState<string>('');
   const [expMonth, setExpMonth] = React.useState<number>(0);
-  const [expYear, setExpYear] = React.useState<number | undefined>(undefined);
+  const [expYear, setExpYear] = React.useState<string>('');
   const [cardHolder, setCardHolder] = React.useState<string>('');
   const [zipCode, setZipCode] = React.useState<string>('');
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [noResell, setNoResell] = React.useState<boolean>(false);
   const [refundTerm, setRefundTerm] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -103,13 +106,21 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onCardNumberChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setCardNumber(event.target.value);
+      if (!/([^0-9])/.test(event.target.value)) {
+        setCardNumber(event.target.value);
+      } else {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      }
     },
     []
   );
   const onSecurityCodeChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setSecurityCode(parseInt(event.target.value));
+      if (!/([^0-9])/.test(event.target.value)) {
+        setSecurityCode(event.target.value);
+      } else {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      }
     },
     []
   );
@@ -121,7 +132,11 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onExpYearChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setExpYear(parseInt(event.target.value));
+      if (!/([^0-9])/.test(event.target.value)) {
+        setExpYear(event.target.value);
+      } else {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      }
     },
     []
   );
@@ -137,6 +152,11 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
     },
     []
   );
+
+  // EventHandler to close alert
+  const closeAlert = React.useCallback(() => {
+    setError({ error: false, msg: '' });
+  }, []);
 
   // TODO: Validity Check
 
@@ -156,7 +176,6 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       handleClose();
       navigate('/confirm/1234');
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -346,6 +365,16 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
           </Box>
         </Fade>
       </Modal>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.error}
+        onClose={closeAlert}
+      >
+        <Alert onClose={closeAlert} severity="error">
+          {error.msg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
