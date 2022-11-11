@@ -35,7 +35,7 @@ import formStyle from './globalStyles/formStyle';
 
 // Demo data
 import games from './demoData/games';
-import purchases from './demoData/purchases';
+import defaultPurchases from './demoData/purchases';
 const PurchaseModal = React.lazy(
   () => import('./components/PurchaseModal/PurchaseModal')
 );
@@ -51,6 +51,12 @@ function GameDetail(): React.ReactElement {
   const navigate = useNavigate();
   // Retrieve gameId from the path
   const { gameid } = useParams();
+
+  // Get purchases (demo data)
+  const newPurchasesString = sessionStorage.getItem('purchases');
+  const newPurchases =
+    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+  const purchases = [...defaultPurchases, ...newPurchases];
 
   // Generate style for the form box
   const theme = useTheme();
@@ -160,15 +166,16 @@ function GameDetail(): React.ReactElement {
 
   // Date String
   const gameDate = new Date(game.year, game.month - 1, game.day);
-  let gameDateString = gameDate.toLocaleDateString('en-US', {
+  const gameDateString = gameDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
+  let gameDateStringForDetailPage = gameDateString;
   if (game.hour === undefined) {
-    gameDateString += ' TBD';
+    gameDateStringForDetailPage += ' TBD';
   } else {
-    gameDateString += ` ${game.hour}:${game.minute}`;
+    gameDateStringForDetailPage += ` ${game.hour}:${game.minute}`;
   }
 
   return (
@@ -180,7 +187,7 @@ function GameDetail(): React.ReactElement {
             {`vs ${game.opponent}`}
           </Typography>
           <Typography variant="body1" align="left">
-            <strong>Date:</strong> {gameDateString}
+            <strong>Date:</strong> {gameDateStringForDetailPage}
           </Typography>
           <Typography variant="body1" align="left">
             <strong>Stadium:</strong> Camp Randall Stadium
@@ -353,11 +360,20 @@ function GameDetail(): React.ReactElement {
             <PurchaseModal
               isOpen={purchaseModalOpen}
               handleClose={closePurchaseModal}
+              gameId={gameid}
+              gameDateString={gameDateString}
+              opponentTeam={game.opponent}
               ticketCounts={{
                 platinum: platinumTicketCnt,
                 gold: goldTicketCnt,
                 silver: silverTicketCnt,
                 bronze: bronzeTicketCnt,
+              }}
+              ticketPrice={{
+                platinum: game.ticketPrice.platinum,
+                gold: game.ticketPrice.gold,
+                silver: game.ticketPrice.silver,
+                bronze: game.ticketPrice.bronze,
               }}
             />
           )}
