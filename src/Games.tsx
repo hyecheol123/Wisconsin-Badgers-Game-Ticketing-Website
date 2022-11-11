@@ -17,6 +17,10 @@ import Footer from './components/Footer/Footer';
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
 
+// Demo data
+import games from './demoData/games';
+import defaultPurchases from './demoData/purchases';
+
 /**
  * React functional component for Game List
  *
@@ -26,12 +30,37 @@ function Games(): React.ReactElement {
   // React Router
   const navigate = useNavigate();
 
+  // Get purchases (Demo Data)
+  const purchases = React.useMemo(() => {
+    const newPurchasesString = sessionStorage.getItem('purchases');
+    const newPurchases =
+      newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+    return [...defaultPurchases, ...newPurchases];
+  }, []);
+
   // Function to move to the game detail page
   const gameDetail = React.useCallback(
-    (gameId: number): void => {
+    (gameId: string): void => {
       navigate(`/games/${gameId}`);
     },
     [navigate]
+  );
+
+  // Function to calculate remaining Seats of the game
+  const getNumRemainingSeat = React.useCallback(
+    (gameId: string, numTotalSeats: number): number => {
+      for (const purchase of purchases) {
+        if (purchase.gameId === gameId) {
+          numTotalSeats -= purchase.tickets.platinum;
+          numTotalSeats -= purchase.tickets.gold;
+          numTotalSeats -= purchase.tickets.silver;
+          numTotalSeats -= purchase.tickets.bronze;
+        }
+      }
+
+      return numTotalSeats;
+    },
+    [purchases]
   );
 
   return (
@@ -40,31 +69,33 @@ function Games(): React.ReactElement {
       <Box sx={contentStyle.ContentWrapper}>
         <Box sx={contentStyle.Content}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            Game Lists (2022)
+            Game Lists (2023)
           </Typography>
           <Typography variant="body1" align="left">
             This is the full list of this season's home game. Click the game to
             see more detail and to purchase the tickets.
           </Typography>
-          {new Array(6).fill(0).map((_value, index) => {
+          {games.map((value) => {
+            const gameDate = new Date(value.year, value.month - 1, value.day);
+
             return (
               <Card
-                key={index}
+                key={value.id}
                 sx={cardStyle.Card}
                 onClick={(): void => {
-                  gameDetail(index);
+                  gameDetail(value.id);
                 }}
               >
                 <Box sx={cardStyle.ImageBox}>
                   <CardMedia
                     component="img"
-                    image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
-                    alt="Wisconsin Badgers Logo"
+                    image={value.opponentImgUrl}
+                    alt={`${value.opponent} Logo`}
                   />
                 </Box>
                 <CardContent sx={cardStyle.InfoBox}>
                   <Typography variant="h5" component="div" noWrap>
-                    vs Opponent Team
+                    {`vs ${value.opponent}`}
                   </Typography>
                   <Typography
                     variant="subtitle1"
@@ -72,9 +103,19 @@ function Games(): React.ReactElement {
                     component="div"
                     sx={cardStyle.GrowText}
                   >
-                    Nov. 11 2022
+                    {gameDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </Typography>
-                  <Typography variant="body1">Remaining Seats: xxx</Typography>
+                  <Typography variant="body1">{`Remaining Seats: ${getNumRemainingSeat(
+                    value.id,
+                    value.ticketCount.platinum +
+                      value.ticketCount.gold +
+                      value.ticketCount.silver +
+                      value.ticketCount.bronze
+                  )}`}</Typography>
                 </CardContent>
               </Card>
             );

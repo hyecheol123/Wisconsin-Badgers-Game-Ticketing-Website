@@ -7,20 +7,25 @@
 // React
 import React from 'react';
 // React Router
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Material UI
 import {
+  Alert,
   Box,
   Button,
   Divider,
   MenuItem,
+  Snackbar,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material';
+// Global Style
+import Error from './globalTypes/FormError';
 // Component
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import ErrorPage from './components/ErrorPage/ErrorPage';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
@@ -28,6 +33,10 @@ import contentStyle from './globalStyles/contentStyle';
 import GameDetailStyle from './GameDetailStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 import formStyle from './globalStyles/formStyle';
+
+// Demo data
+import games from './demoData/games';
+import defaultPurchases from './demoData/purchases';
 const PurchaseModal = React.lazy(
   () => import('./components/PurchaseModal/PurchaseModal')
 );
@@ -41,12 +50,19 @@ function GameDetail(): React.ReactElement {
   // React Router
   const location = useLocation();
   const navigate = useNavigate();
+  // Retrieve gameId from the path
+  const { gameid } = useParams();
+
+  // Get purchases (demo data)
+  const newPurchasesString = sessionStorage.getItem('purchases');
+  const newPurchases =
+    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+  const purchases = [...defaultPurchases, ...newPurchases];
 
   // Generate style for the form box
   const theme = useTheme();
 
   // States
-  // const [error, _setError] = React.useState<boolean>(false);
   const loginContext = useLoginContext();
   const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(0);
   const [goldTicketCnt, setGoldTicketCnt] = React.useState<number>(0);
@@ -54,6 +70,7 @@ function GameDetail(): React.ReactElement {
   const [bronzeTicketCnt, setBronzeTicketCnt] = React.useState<number>(0);
   const [purchaseModalOpen, setPurchaseModalOpen] =
     React.useState<boolean>(false);
+  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
   // EventHandlers to modify form input
   const onPlatinumTicketCntChange: React.ChangeEventHandler = React.useCallback(
@@ -81,29 +98,92 @@ function GameDetail(): React.ReactElement {
     []
   );
 
+  // EventHandler to close alert
+  const closeAlert = React.useCallback(() => {
+    setError({ error: false, msg: '' });
+  }, []);
+
+  // current selected number of tickets
+  const currSelected =
+    platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
+
   // Event Handler for user to continue purchase the ticket
   const openPurchaseModal = React.useCallback((): void => {
     // When user is not logged in, redirect user to the login page
     if (!loginContext.login) {
       navigate('/login', { state: { prevLocation: location.pathname } });
+    } else {
+      // If there is no seats selected (total number of selected seat is 0),
+      // Else if total selected seat is greater than 6,
+      // do not open modal and alert user
+      if (currSelected < 1) {
+        setError({ error: true, msg: 'Should select at least one seat' });
+      } else if (currSelected > 6) {
+        setError({ error: true, msg: 'Cannot choose more than 6 seats' });
+      } else {
+        // Open modal if there is no error
+        setPurchaseModalOpen(true);
+      }
     }
-
-    // User logged in, open modal
-    setPurchaseModalOpen(true);
-  }, [navigate, location.pathname, loginContext.login]);
+  }, [navigate, location.pathname, loginContext.login, currSelected]);
   const closePurchaseModal = React.useCallback((): void => {
     setPurchaseModalOpen(false);
   }, []);
 
-  const availableTicketCnt = [
-    { value: 0, label: 0 },
-    { value: 1, label: 1 },
-    { value: 2, label: 2 },
-    { value: 3, label: 3 },
-    { value: 4, label: 4 },
-    { value: 5, label: 5 },
-    { value: 6, label: 6 },
-  ];
+  // Retrieve game information
+  let game;
+  for (const item of games) {
+    if (item.id === gameid) {
+      game = item;
+    }
+  }
+  // Game not found
+  if (game === undefined) {
+    // 404 Error
+    return (
+      <>
+        <Header />
+        <ErrorPage errorCode={404} />
+        <Footer />
+      </>
+    );
+  }
+
+  // Calculate the remaining seat for each game tier using purchase history
+  const maxSeats = {
+    platinum: game.ticketCount.platinum,
+    gold: game.ticketCount.gold,
+    silver: game.ticketCount.silver,
+    bronze: game.ticketCount.bronze,
+  };
+  for (const purchase of purchases) {
+    if (purchase.gameId === game.id) {
+      maxSeats.platinum -= purchase.tickets.platinum;
+      maxSeats.gold -= purchase.tickets.gold;
+      maxSeats.silver -= purchase.tickets.silver;
+      maxSeats.bronze -= purchase.tickets.bronze;
+    }
+  }
+  // Maximum ticket for each
+  const maxTicketPerPurchase = 6;
+  // eslint-disable-next-line guard-for-in
+  for (const seatTier in maxSeats) {
+    maxSeats[seatTier] = Math.min(maxSeats[seatTier], maxTicketPerPurchase);
+  }
+
+  // Date String
+  const gameDate = new Date(game.year, game.month - 1, game.day);
+  const gameDateString = gameDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  let gameDateStringForDetailPage = gameDateString;
+  if (game.hour === undefined) {
+    gameDateStringForDetailPage += ' TBD';
+  } else {
+    gameDateStringForDetailPage += ` ${game.hour}:${game.minute}`;
+  }
 
   return (
     <>
@@ -111,10 +191,10 @@ function GameDetail(): React.ReactElement {
       <Box sx={contentStyle.ContentWrapper}>
         <Box sx={contentStyle.Content}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            vs Opponent Team
+            {`vs ${game.opponent}`}
           </Typography>
           <Typography variant="body1" align="left">
-            <strong>Date:</strong> Nov. 11. 2022 16:00
+            <strong>Date:</strong> {gameDateStringForDetailPage}
           </Typography>
           <Typography variant="body1" align="left">
             <strong>Stadium:</strong> Camp Randall Stadium
@@ -123,7 +203,7 @@ function GameDetail(): React.ReactElement {
             <Box sx={GameDetailStyle.TeamContent}>
               <Box sx={GameDetailStyle.Team}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
+                  src="https://d1qwqe1acr1rnz.cloudfront.net/images/logos/Wisconsin.png"
                   alt="Wisconsin Badgers"
                   style={GameDetailStyle.TeamImage}
                 />
@@ -135,8 +215,8 @@ function GameDetail(): React.ReactElement {
             <Box sx={GameDetailStyle.TeamContent}>
               <Box sx={GameDetailStyle.Team}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
-                  alt="Wisconsin Badgers"
+                  src={game.opponentImgUrl}
+                  alt={game.opponent}
                   style={GameDetailStyle.TeamImage}
                 />
               </Box>
@@ -159,68 +239,108 @@ function GameDetail(): React.ReactElement {
                 The ticket grade indicates the distance between the seat and the
                 field. The platinum ticket is closest to the field, followed by
                 gold, silver, and bronze.
+                <br />
+                Up to <strong>6 tickets</strong> can be purchased in one
+                transaction.
               </Typography>
               <Divider sx={GameDetailStyle.PurchaseDivider} />
               <TextField
                 select
                 fullWidth
-                label="Platinum Tickets - $80"
+                label={`Platinum Tickets - $${game.ticketPrice.platinum}`}
                 value={platinumTicketCnt}
                 onChange={onPlatinumTicketCntChange}
                 helperText="Please choose the number of platinum tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem
-                    key={`Platinum-${option.value}`}
-                    value={option.value}
-                  >
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.min(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.platinum
+                      ) + 1,
+                      platinumTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Platinum-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Gold Tickets - $65"
+                label={`Gold Tickets - $${game.ticketPrice.gold}`}
                 value={goldTicketCnt}
                 onChange={onGoldTicketCntChange}
                 helperText="Please choose the number of gold tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Gold-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.min(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.gold
+                      ) + 1,
+                      goldTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Gold-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Silver Tickets - $50"
+                label={`Silver Tickets - $${game.ticketPrice.silver}`}
                 value={silverTicketCnt}
                 onChange={onSilverTicketCntChange}
                 helperText="Please choose the number of silver tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Silver-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.min(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.silver
+                      ) + 1,
+                      silverTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Silver-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
                 select
                 fullWidth
-                label="Bronze Tickets - $35"
+                label={`Bronze Tickets - $${game.ticketPrice.bronze}`}
                 value={bronzeTicketCnt}
                 onChange={onBronzeTicketCntChange}
                 helperText="Please choose the number of bronze tickets you want to purchase"
                 sx={GameDetailStyle.Selection}
               >
-                {availableTicketCnt.map((option) => (
-                  <MenuItem key={`Bronze-${option.value}`} value={option.value}>
-                    {option.label}
+                {[
+                  ...Array(
+                    Math.max(
+                      Math.min(
+                        maxTicketPerPurchase - currSelected,
+                        maxSeats.bronze
+                      ) + 1,
+                      bronzeTicketCnt + 1
+                    )
+                  ),
+                ].map((_value, index) => (
+                  <MenuItem key={`Bronze-${index}`} value={index}>
+                    {index}
                   </MenuItem>
                 ))}
               </TextField>
@@ -247,16 +367,35 @@ function GameDetail(): React.ReactElement {
             <PurchaseModal
               isOpen={purchaseModalOpen}
               handleClose={closePurchaseModal}
+              gameId={gameid}
+              gameDateString={gameDateString}
+              opponentTeam={game.opponent}
               ticketCounts={{
                 platinum: platinumTicketCnt,
                 gold: goldTicketCnt,
                 silver: silverTicketCnt,
                 bronze: bronzeTicketCnt,
               }}
+              ticketPrice={{
+                platinum: game.ticketPrice.platinum,
+                gold: game.ticketPrice.gold,
+                silver: game.ticketPrice.silver,
+                bronze: game.ticketPrice.bronze,
+              }}
             />
           )}
         </Box>
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.error}
+        onClose={closeAlert}
+      >
+        <Alert onClose={closeAlert} severity="error">
+          {error.msg}
+        </Alert>
+      </Snackbar>
       <Footer />
     </>
   );

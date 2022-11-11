@@ -4,12 +4,16 @@
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
 
+// CryptoJS
+import sha512 from 'crypto-js/sha512';
+import base64 from 'crypto-js/enc-base64';
 // React
 import React from 'react';
 // React Router
 import { useNavigate } from 'react-router-dom';
 // Material UI
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -19,21 +23,35 @@ import {
   FormControlLabel,
   MenuItem,
   Modal,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
+// Global Type
+import Error from '../../globalTypes/FormError';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
+// Demo Data
+import loginUser from '../../demoData/loginUser';
 
 // Type for the component's props
 type PurchaseModalProps = {
   isOpen: boolean;
   handleClose: () => void;
+  gameId: string;
+  gameDateString: string;
+  opponentTeam: string;
   ticketCounts: {
-    platinum?: number;
-    gold?: number;
-    silver?: number;
-    bronze?: number;
+    platinum: number;
+    gold: number;
+    silver: number;
+    bronze: number;
+  };
+  ticketPrice: {
+    platinum: number;
+    gold: number;
+    silver: number;
+    bronze: number;
   };
 };
 
@@ -44,24 +62,24 @@ type PurchaseModalProps = {
  * @return {React.ReactElement} Renders Purchase Modal
  */
 function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
-  const { isOpen, handleClose } = props;
+  const { isOpen, handleClose, gameId, gameDateString } = props;
+  const { opponentTeam, ticketCounts, ticketPrice } = props;
 
   // React Router
   const navigate = useNavigate();
 
   // State
   const [cardNumber, setCardNumber] = React.useState<string>('');
-  const [securityCode, setSecurityCode] = React.useState<number | undefined>(
-    undefined
-  );
+  const [securityCode, setSecurityCode] = React.useState<string>('');
   const [expMonth, setExpMonth] = React.useState<number>(0);
-  const [expYear, setExpYear] = React.useState<number | undefined>(undefined);
+  const [expYear, setExpYear] = React.useState<string>('');
   const [cardHolder, setCardHolder] = React.useState<string>('');
   const [zipCode, setZipCode] = React.useState<string>('');
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [noResell, setNoResell] = React.useState<boolean>(false);
   const [refundTerm, setRefundTerm] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -94,13 +112,27 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onCardNumberChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setCardNumber(event.target.value);
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 16) {
+        setError({ error: true, msg: 'Card Number should be 15 ~ 16 digits' });
+      } else {
+        setCardNumber(value);
+      }
     },
     []
   );
   const onSecurityCodeChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setSecurityCode(parseInt(event.target.value));
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 4) {
+        setError({ error: true, msg: 'Security code should be 3 ~ 4 digits' });
+      } else {
+        setSecurityCode(value);
+      }
     },
     []
   );
@@ -112,7 +144,14 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onExpYearChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setExpYear(parseInt(event.target.value));
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 4) {
+        setError({ error: true, msg: 'Expiry year should be 4 digits' });
+      } else {
+        setExpYear(value);
+      }
     },
     []
   );
@@ -129,7 +168,65 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
     []
   );
 
-  // TODO: Validity Check
+  // EventHandler to close alert
+  const closeAlert = React.useCallback(() => {
+    setError({ error: false, msg: '' });
+  }, []);
+
+  // Validity Check
+  const validityCheck = React.useCallback((): boolean => {
+    // Agree to all terms and conditions
+    if (!acknowledge || !noResell || !refundTerm) {
+      setError({
+        error: true,
+        msg: 'You have to agree with all terms and conditions',
+      });
+      return false;
+    }
+
+    // No empty field
+    if (
+      cardNumber.length === 0 ||
+      securityCode.length === 0 ||
+      expMonth === 0 ||
+      expYear.length === 0 ||
+      cardHolder.length === 0 ||
+      zipCode.length === 0
+    ) {
+      setError({ error: true, msg: 'All fields are required' });
+      return false;
+    }
+
+    // Card number should have either 15 or 16 digits
+    if (cardNumber.length > 16 || cardNumber.length < 15) {
+      setError({ error: true, msg: 'Card Number should be 15 ~ 16 digits' });
+      return false;
+    }
+
+    // card security code should be either 3 or 4 digits
+    if (securityCode.length > 4 || securityCode.length < 3) {
+      setError({ error: true, msg: 'Security code should be 3 ~ 4 digits' });
+      return false;
+    }
+
+    // exp year should be 4 digit
+    if (expYear.length !== 4) {
+      setError({ error: true, msg: 'Expiry year should be 4 digits' });
+      return false;
+    }
+
+    return true;
+  }, [
+    acknowledge,
+    cardHolder,
+    cardNumber,
+    expMonth,
+    expYear,
+    noResell,
+    refundTerm,
+    securityCode,
+    zipCode,
+  ]);
 
   // Submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
@@ -137,19 +234,56 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       event.preventDefault();
       setDisabled(true);
 
-      // TODO: Validity Check
+      // Validity Check
+      if (!validityCheck()) {
+        setDisabled(false);
+        return;
+      }
 
-      // TODO: Submit API request
-      console.log('Purchase');
-      console.log('Detail hided for security reasons');
+      // TODO: Submit API request - TODO: Check for the remaining seats again
+      // Pretend we get payment
+      const newPurchasesString = sessionStorage.getItem('purchases');
+      const newPurchases =
+        newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+      const purchaseId = sha512(
+        loginUser.email + gameId + new Date().toISOString()
+      )
+        .toString(base64)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+      const purchaseInfo = {
+        id: purchaseId,
+        gameId: gameId,
+        userEmail: loginUser.email,
+        tickets: {
+          platinum: ticketCounts.platinum,
+          gold: ticketCounts.gold,
+          silver: ticketCounts.silver,
+          bronze: ticketCounts.bronze,
+        },
+      };
+      newPurchases.push(purchaseInfo);
+      sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
 
       // Redirect to the confirmation page
       handleClose();
       navigate('/confirm/1234');
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [validityCheck]
   );
+
+  const totalNumTickets =
+    ticketCounts.platinum +
+    ticketCounts.gold +
+    ticketCounts.silver +
+    ticketCounts.bronze;
+
+  const totalTicketPrice =
+    ticketCounts.platinum * ticketPrice.platinum +
+    ticketCounts.gold * ticketPrice.gold +
+    ticketCounts.silver * ticketPrice.silver +
+    ticketCounts.bronze * ticketPrice.bronze;
 
   const month = [
     { value: 0, label: 'Choose Month' },
@@ -187,33 +321,37 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
               Payment
             </Typography>
             <Typography variant="h6" component="div" align="center">
-              Nov. 11. 2022 | vs Opponent Team
+              {`${gameDateString} | vs ${opponentTeam}`}
             </Typography>
             <ul>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Platinum Ticket ($80): </strong>2
+                  <strong>{`Platinum Ticket ($${ticketPrice.platinum}): `}</strong>
+                  {ticketCounts.platinum}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Gold Ticket ($65): </strong>1
+                  <strong>{`Gold Ticket ($${ticketPrice.gold}): `}</strong>
+                  {ticketCounts.gold}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Silver Ticket ($50): </strong>1
+                  <strong>{`Silver Ticket ($${ticketPrice.silver}): `}</strong>
+                  {ticketCounts.silver}
                 </Typography>
               </li>
               <li>
                 <Typography variant="body1" align="left">
-                  <strong>Bronze Ticket ($35): </strong>2
+                  <strong>{`Bronze Ticket ($${ticketPrice.bronze}): `}</strong>
+                  {ticketCounts.bronze}
                 </Typography>
               </li>
             </ul>
             <Typography>
-              To purchase <strong>6 tickets</strong> listed above, you have to
-              pay <strong>$345</strong>.
+              To purchase <strong>{`${totalNumTickets} tickets`}</strong> listed
+              above, you have to pay <strong>{`$${totalTicketPrice}`}</strong>.
             </Typography>
             <Divider sx={modalStyle.DividerMargin} />
             <Box>
@@ -321,6 +459,16 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
           </Box>
         </Fade>
       </Modal>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.error}
+        onClose={closeAlert}
+      >
+        <Alert onClose={closeAlert} severity="error">
+          {error.msg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

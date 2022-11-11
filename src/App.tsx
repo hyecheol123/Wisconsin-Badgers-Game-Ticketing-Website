@@ -29,6 +29,7 @@ const Games = React.lazy(() => import('./Games'));
 const MyTickets = React.lazy(() => import('./MyTickets'));
 const GameDetail = React.lazy(() => import('./GameDetail'));
 const PurchaseConfirmation = React.lazy(() => import('./PurchaseConfirmation'));
+const ErrorPage = React.lazy(() => import('./components/ErrorPage/ErrorPage'));
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {
@@ -218,6 +219,16 @@ function App(): React.ReactElement {
             path="/confirm/:purchaseid"
             element={
               loginContext.initialized ? <PurchaseConfirmation /> : <Loading />
+            }
+          />
+          <Route
+            path="*"
+            element={
+              loginContext.initialized ? (
+                <ErrorPage errorCode={404} />
+              ) : (
+                <Loading />
+              )
             }
           />
         </Routes>
