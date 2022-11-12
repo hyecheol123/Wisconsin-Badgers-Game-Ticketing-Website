@@ -1,4 +1,6 @@
-const games = [
+import Game from '../globalTypes/data/Game';
+
+const games: Game[] = [
   {
     id: '1',
     opponent: 'Buffalo',

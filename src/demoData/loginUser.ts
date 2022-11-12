@@ -1,7 +1,9 @@
 // Need to combine the following array with the array saved in
 //   the sessionStorage with key "users"
 
-const loginUser = [
+import User from '../globalTypes/data/User';
+
+const loginUser: User[] = [
   {
     email: 'tickets@badgergames.com',
     password: 'password',

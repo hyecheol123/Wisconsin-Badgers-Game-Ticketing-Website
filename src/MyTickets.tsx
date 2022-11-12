@@ -54,9 +54,9 @@ function MyTickets(): React.ReactElement {
   const purchases = [...defaultPurchases, ...newPurchases];
 
   const displayingObj = [];
-  for (let purchase of purchases) {
+  for (const purchase of purchases) {
     if (purchase.userEmail === loginContext.email) {
-      for (let game of games) {
+      for (const game of games) {
         if (game.id === purchase.gameId) {
           const gameDate = parseInt(
             `${game.year}${game.month.toLocaleString('en-US', {
@@ -78,7 +78,7 @@ function MyTickets(): React.ReactElement {
             }
             idx++;
           }
-          if(idx === displayingObj.length) {
+          if (idx === displayingObj.length) {
             displayingObj.push(target);
           }
           break;
