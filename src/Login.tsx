@@ -122,7 +122,7 @@ function Login(): React.ReactElement {
 
       // Submit Login API Request
       let targetUser;
-      for (let user of users) {
+      for (const user of users) {
         if (user.email === email.toLowerCase()) {
           targetUser = user;
           break;
