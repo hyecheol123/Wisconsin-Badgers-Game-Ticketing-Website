@@ -134,14 +134,22 @@ function PurchaseConfirmation(): React.ReactElement {
             <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
               Thanks for Purchase
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-              sx={PurchaseConfirmationStyle.Subtitle}
-            >
-              {`Confirmation No: ${purchaseid}`}
-            </Typography>
+            <Box sx={PurchaseConfirmationStyle.SubtitleWrapper}>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+              >
+                {`Confirmation No: ${purchaseid}`}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+              >
+                {`Customer Name: ${loginUser.name}`}
+              </Typography>
+            </Box>
             <Typography variant="body1" align="left">
               {`Thanks for purchasing ${
                 purchase.tickets.platinum +
