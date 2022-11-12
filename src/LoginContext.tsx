@@ -13,16 +13,15 @@ type LoginContextProviderProps = {
 };
 
 // Type for all actions
-// Token will be saved in the cookie
 type Action =
-  | { type: 'LOGIN' }
+  | { type: 'LOGIN'; email: string }
   | { type: 'LOGOUT' }
-  | { type: 'INITIALIZE'; login: boolean };
+  | { type: 'INITIALIZE'; login: boolean; email?: string };
 
 // Type definition for state
 type State = {
   login: boolean;
-  // Will be true after checking current cookie's eligibility
+  email?: string;
   initialized: boolean;
   dispatch: React.Dispatch<Action>;
 };
@@ -45,11 +44,16 @@ function reducer(state: State, action: Action): State {
   // Actiaul login data - token - will be set in cookie automatically
   switch (action.type) {
     case 'LOGIN':
-      return { ...state, login: true };
+      return { ...state, login: true, email: action.email };
     case 'LOGOUT':
-      return { ...state, login: false };
+      return { ...state, login: false, email: undefined };
     case 'INITIALIZE':
-      return { ...state, login: action.login, initialized: true };
+      return {
+        ...state,
+        login: action.login,
+        email: action.email,
+        initialized: true,
+      };
     default:
       return state;
   }

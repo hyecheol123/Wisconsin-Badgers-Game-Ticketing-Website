@@ -164,9 +164,14 @@ function App(): React.ReactElement {
     // When application is not initialized
     if (!loginContext.initialized) {
       // Check whether user token alive or not
-      if (localStorage.getItem('LOGIN') === 'yes') {
+      const prevLoginEmail = localStorage.getItem('LOGIN');
+      if (prevLoginEmail !== null) {
         // TODO: API Call to Renew Token
-        loginContext.dispatch({ type: 'INITIALIZE', login: true });
+        loginContext.dispatch({
+          type: 'INITIALIZE',
+          login: true,
+          email: prevLoginEmail,
+        });
         // TOOD: If failed, unset local storage flag
       } else {
         localStorage.removeItem('LOGIN');

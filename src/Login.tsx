@@ -26,7 +26,7 @@ import { useLoginContext } from './LoginContext';
 import styles from './globalStyles/accountStyle';
 
 // Demo data
-import loginUser from './demoData/loginUser';
+import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React Functional Component to generate Login view
@@ -43,6 +43,11 @@ function Login(): React.ReactElement {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [error, setError] = React.useState<Error>({ error: false, msg: '' });
+
+  // Get users (demo data)
+  const newUsersString = sessionStorage.getItem('users');
+  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
+  const users = [...defaultLoginUser, ...newUsers];
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -116,12 +121,16 @@ function Login(): React.ReactElement {
       }
 
       // Submit Login API Request
-      if (
-        email.toLowerCase() === loginUser.email &&
-        password === loginUser.password
-      ) {
-        localStorage.setItem('LOGIN', 'yes');
-        loginContext.dispatch({ type: 'LOGIN' });
+      let targetUser;
+      for (const user of users) {
+        if (user.email === email.toLowerCase()) {
+          targetUser = user;
+          break;
+        }
+      }
+      if (targetUser !== undefined && password === targetUser.password) {
+        localStorage.setItem('LOGIN', targetUser.email);
+        loginContext.dispatch({ type: 'LOGIN', email: targetUser.email });
         goBack();
       } else {
         // Login Fail Error Message

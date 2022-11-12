@@ -29,10 +29,12 @@ import {
 } from '@mui/material';
 // Global Type
 import Error from '../../globalTypes/FormError';
+// Custom Hooks to load Login Context
+import { useLoginContext } from '../../LoginContext';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
 // Demo Data
-import loginUser from '../../demoData/loginUser';
+import defaultLoginUser from '../../demoData/loginUser';
 
 // Type for the component's props
 type PurchaseModalProps = {
@@ -69,6 +71,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   const navigate = useNavigate();
 
   // State
+  const loginContext = useLoginContext();
   const [cardNumber, setCardNumber] = React.useState<string>('');
   const [securityCode, setSecurityCode] = React.useState<string>('');
   const [expMonth, setExpMonth] = React.useState<number>(0);
@@ -80,6 +83,18 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   const [refundTerm, setRefundTerm] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [error, setError] = React.useState<Error>({ error: false, msg: '' });
+
+  // Retrieve user (demo data)
+  const newUsersString = sessionStorage.getItem('users');
+  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
+  const users = [...defaultLoginUser, ...newUsers];
+  let loginUser;
+  for (const user of users) {
+    if (user.email === loginContext.email) {
+      loginUser = user;
+      break;
+    }
+  }
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(

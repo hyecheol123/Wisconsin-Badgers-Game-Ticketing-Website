@@ -55,11 +55,6 @@ function SignUp(): React.ReactElement {
     error: false,
     helperText: '',
   });
-  const [phoneNumber, setPhoneNumber] = React.useState<textFieldState>({
-    value: '',
-    error: false,
-    helperText: '',
-  });
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -109,20 +104,117 @@ function SignUp(): React.ReactElement {
       }),
     []
   );
-  const onPhoneNumberChange: React.ChangeEventHandler = React.useCallback(
-    (event: React.ChangeEvent) =>
-      setPhoneNumber((prevPN) => {
-        return { ...prevPN, value: (event.target as HTMLInputElement).value };
-      }),
-    []
-  );
 
   // Helper Function to check input
-  // TODO: Name Check
-  // TODO: Email Check
-  // TODO: Password Check - More than 8 characters in total, should include at least one upper case, one lower case, and one number
-  // TODO: PasswordRetyped Check
-  // TODO: PhoneNumber Check
+  const nameCheck = React.useCallback((): boolean => {
+    // Name is not valid when it is empty
+    if (name.value === '') {
+      setName((prevName) => {
+        return {
+          ...prevName,
+          error: true,
+          helperText: 'Name is required field!',
+        };
+      });
+      return false;
+    } else if (name.error && name.value !== '') {
+      // When user fix the error (enter name)
+      setName((prevName) => {
+        return { ...prevName, error: false, helperText: '' };
+      });
+      return true;
+    }
+    return true;
+  }, [name]);
+  const emailCheck = React.useCallback((): boolean => {
+    // Email is not valid when it is empty
+    if (email.value === '') {
+      setEmail((prevEmail) => {
+        return {
+          ...prevEmail,
+          error: true,
+          helperText: 'Email is required field!',
+        };
+      });
+      return false;
+    } else if (
+      !String(email.value)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
+    ) {
+      // Email is not valid when the format is wrong
+      setEmail((prevEmail) => {
+        return {
+          ...prevEmail,
+          error: true,
+          helperText: 'Wrong Email Format',
+        };
+      });
+      return false;
+    } else if (email.error && email.value !== '') {
+      // When user fix the error
+      setEmail((prevEmail) => {
+        return { ...prevEmail, error: false, helperText: '' };
+      });
+      return true;
+    }
+    return true;
+  }, [email]);
+  const passwordCheck = React.useCallback((): boolean => {
+    // TODO: Password Rule - More than 8 characters in total, should include at least one upper case, one lower case, and one number
+    if (password.value === '') {
+      setPassword((prevPW) => {
+        return {
+          ...prevPW,
+          error: true,
+          helperText: 'Password is required field!',
+        };
+      });
+      return false;
+    } else if (password.error && password.value !== '') {
+      // When user fix the error
+      setPassword((prevPW) => {
+        return { ...prevPW, error: false, helperText: '' };
+      });
+      return true;
+    }
+    return true;
+  }, [password]);
+  const passwordRetypedCheck = React.useCallback((): boolean => {
+    if (passwordRetyped.value === '') {
+      setPasswordRetyped((prevPWRetyped) => {
+        return {
+          ...prevPWRetyped,
+          error: true,
+          helperText: 'Retyped Password is required field!',
+        };
+      });
+      return false;
+    } else if (passwordRetyped.value !== password.value) {
+      // Password and password retyped should be same
+      setPasswordRetyped((prevPWRetyped) => {
+        return {
+          ...prevPWRetyped,
+          error: true,
+          helperText: 'Retyped password does not match with the password',
+        };
+      });
+      return false;
+    } else if (passwordRetyped.error && passwordRetyped.value !== '') {
+      // When user fix the error
+      setPasswordRetyped((prevPWRetyped) => {
+        return {
+          ...prevPWRetyped,
+          error: false,
+          helperText: '',
+        };
+      });
+      return true;
+    }
+    return true;
+  }, [passwordRetyped, password]);
 
   // Generate style of formBox
   const theme = useTheme();
@@ -134,14 +226,28 @@ function SignUp(): React.ReactElement {
       setDisabled(true);
 
       // TODO: Check validity of inputs
+      const validityCheck = [
+        nameCheck(),
+        emailCheck(),
+        passwordCheck(),
+        passwordRetypedCheck(),
+      ];
+      if (validityCheck.includes(false)) {
+        setDisabled(false);
+        return;
+      }
 
       // TODO: API Calls
-      console.log('Sign Up Form Submitted');
-      console.log(`Name: ${name.value}`);
-      console.log(`Email: ${email.value}`);
-      console.log(`Password: ${password.value}`);
-      console.log(`Password Retyped: ${passwordRetyped.value}`);
-      console.log(`Phone Number: ${phoneNumber.value}`);
+      const newUsersString = sessionStorage.getItem('users');
+      const newUsers =
+        newUsersString !== null ? JSON.parse(newUsersString) : [];
+      const userInfo = {
+        email: email.value,
+        password: password.value,
+        name: name.value,
+      };
+      newUsers.push(userInfo);
+      sessionStorage.setItem('users', JSON.stringify(newUsers));
       setDisabled(false);
 
       // Alert
@@ -155,10 +261,20 @@ function SignUp(): React.ReactElement {
         navigate('/');
       }
     },
-    [name, email, password, passwordRetyped, phoneNumber, navigate, state]
+    [
+      name,
+      email,
+      password,
+      navigate,
+      state,
+      nameCheck,
+      emailCheck,
+      passwordCheck,
+      passwordRetypedCheck,
+    ]
   );
 
-  // Function to create n ew form
+  // Function to create new form
   const newForm: React.MouseEventHandler = React.useCallback(
     (event: React.SyntheticEvent) => {
       // Clear Form Contents
@@ -166,7 +282,6 @@ function SignUp(): React.ReactElement {
       setEmail({ value: '', error: false, helperText: '' });
       setPassword({ value: '', error: false, helperText: '' });
       setPasswordRetyped({ value: '', error: false, helperText: '' });
-      setPhoneNumber({ value: '', error: false, helperText: '' });
 
       // Create new form
       event.preventDefault();
@@ -221,6 +336,7 @@ function SignUp(): React.ReactElement {
                 margin="normal"
                 onChange={onNameChange}
                 onKeyPress={onKeyPress}
+                onBlur={nameCheck}
               />
             </Box>
             <Box sx={formBoxStyleProvider(theme, email.error)}>
@@ -247,6 +363,7 @@ function SignUp(): React.ReactElement {
                 margin="normal"
                 onChange={onEmailChange}
                 onKeyPress={onKeyPress}
+                onBlur={emailCheck}
               />
             </Box>
             <Box sx={formBoxStyleProvider(theme, password.error)}>
@@ -274,6 +391,7 @@ function SignUp(): React.ReactElement {
                 margin="normal"
                 onChange={onPasswordChange}
                 onKeyPress={onKeyPress}
+                onBlur={passwordCheck}
               />
             </Box>
             <Box sx={formBoxStyleProvider(theme, passwordRetyped.error)}>
@@ -301,21 +419,7 @@ function SignUp(): React.ReactElement {
                 margin="normal"
                 onChange={onPasswordRetypedChange}
                 onKeyPress={onKeyPress}
-              />
-            </Box>
-            <Box sx={formBoxStyleProvider(theme, phoneNumber.error)}>
-              <Typography variant="h6">Phone Number</Typography>
-              <TextField
-                disabled={disabled}
-                variant="standard"
-                color="secondary"
-                placeholder="888456999"
-                value={phoneNumber.value}
-                helperText={phoneNumber.helperText}
-                error={phoneNumber.error}
-                margin="normal"
-                onChange={onPhoneNumberChange}
-                onKeyPress={onKeyPress}
+                onBlur={passwordRetypedCheck}
               />
             </Box>
             <Box

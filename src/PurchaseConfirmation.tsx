@@ -21,7 +21,7 @@ import contentStyle from './globalStyles/contentStyle';
 import PurchaseConfirmationStyle from './PurchaseConfirmationStyle';
 
 // Demo data
-import loginUser from './demoData/loginUser';
+import defaultLoginUser from './demoData/loginUser';
 import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
 
@@ -79,6 +79,17 @@ function PurchaseConfirmation(): React.ReactElement {
   const newPurchases =
     newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
   const purchases = [...defaultPurchases, ...newPurchases];
+  // Retrieve user (demo data)
+  const newUsersString = sessionStorage.getItem('users');
+  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
+  const users = [...defaultLoginUser, ...newUsers];
+  let loginUser;
+  for (const user of users) {
+    if (user.email === loginContext.email) {
+      loginUser = user;
+      break;
+    }
+  }
 
   if (purchase === undefined) {
     for (const tempPurchase of purchases) {
@@ -123,14 +134,22 @@ function PurchaseConfirmation(): React.ReactElement {
             <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
               Thanks for Purchase
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="text.secondary"
-              component="div"
-              sx={PurchaseConfirmationStyle.Subtitle}
-            >
-              {`Confirmation No: ${purchaseid}`}
-            </Typography>
+            <Box sx={PurchaseConfirmationStyle.SubtitleWrapper}>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+              >
+                {`Confirmation No: ${purchaseid}`}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+              >
+                {`Customer Name: ${loginUser.name}`}
+              </Typography>
+            </Box>
             <Typography variant="body1" align="left">
               {`Thanks for purchasing ${
                 purchase.tickets.platinum +
