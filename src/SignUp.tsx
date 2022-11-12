@@ -238,11 +238,16 @@ function SignUp(): React.ReactElement {
       }
 
       // TODO: API Calls
-      console.log('Sign Up Form Submitted');
-      console.log(`Name: ${name.value}`);
-      console.log(`Email: ${email.value}`);
-      console.log(`Password: ${password.value}`);
-      console.log(`Password Retyped: ${passwordRetyped.value}`);
+      const newUsersString = sessionStorage.getItem('users');
+      const newUsers =
+        newUsersString !== null ? JSON.parse(newUsersString) : [];
+      const userInfo = {
+        email: email.value,
+        password: password.value,
+        name: name.value,
+      };
+      newUsers.push(userInfo);
+      sessionStorage.setItem('users', JSON.stringify(newUsers));
       setDisabled(false);
 
       // Alert
