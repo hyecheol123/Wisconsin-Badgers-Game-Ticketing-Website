@@ -265,7 +265,6 @@ function SignUp(): React.ReactElement {
       name,
       email,
       password,
-      passwordRetyped,
       navigate,
       state,
       nameCheck,

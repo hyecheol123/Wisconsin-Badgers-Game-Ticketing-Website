@@ -91,7 +91,6 @@ Use `Google Firebase Hosting` to deploy this website.
     email: string
     password: string (hashed?)
     name: string
-    phoneNumber: string (optional)
   }
   ```
 
