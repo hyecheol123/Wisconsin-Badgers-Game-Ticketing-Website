@@ -40,7 +40,6 @@ function ChangePW(): React.ReactElement {
   // Get users (demo data)
   const newUsersString = sessionStorage.getItem('users');
   const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
-  const users = [...defaultLoginUser, ...newUsers];
 
   // State
   const loginContext = useLoginContext();
@@ -116,15 +115,23 @@ function ChangePW(): React.ReactElement {
       // Submit API Request
       const currentUserEmail = loginContext.email;
       let currentUser;
-      for (const user of users) {
-        if (user.email === currentUserEmail) {
-          currentUser = user;
+      let willUpdate = -1;
+      if (defaultLoginUser[0].email === currentUserEmail) {
+        currentUser = defaultLoginUser[0];
+      }
+      for (let idx = 0; idx < newUsers.length; idx++) {
+        if (newUsers[idx].email === currentUserEmail) {
+          currentUser = newUsers[idx];
+          willUpdate = idx;
           break;
         }
       }
       if (currentPW === currentUser.password) {
         // TODO: Password Change
-        console.log(currentPW, newPW, confirmPW);
+        if (willUpdate !== -1) {
+          newUsers[willUpdate].password = newPW;
+          sessionStorage.setItem('users', JSON.stringify(newUsers));
+        }
         goBack();
       } else {
         // Change PW Fail Error Message
