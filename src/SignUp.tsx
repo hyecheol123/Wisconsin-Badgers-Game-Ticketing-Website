@@ -21,6 +21,8 @@ import { useLoginContext } from './LoginContext';
 import contentStyle from './globalStyles/contentStyle';
 import formStyle from './globalStyles/formStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
+// Demo data
+import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React functional component for SignUp
@@ -241,6 +243,31 @@ function SignUp(): React.ReactElement {
       const newUsersString = sessionStorage.getItem('users');
       const newUsers =
         newUsersString !== null ? JSON.parse(newUsersString) : [];
+      // Check for Duplicated Email Address
+      if (defaultLoginUser[0].email === email.value) {
+        setEmail((prevEmail) => {
+          return {
+            ...prevEmail,
+            error: true,
+            helperText: 'Already Signed Up!! Use Another Email!!',
+          };
+        });
+        setDisabled(false);
+        return;
+      }
+      for (const user of newUsers) {
+        if (user.email === email.value) {
+          setEmail((prevEmail) => {
+            return {
+              ...prevEmail,
+              error: true,
+              helperText: 'Already Signed Up!! Use Another Email!!',
+            };
+          });
+          setDisabled(false);
+          return;
+        }
+      }
       const userInfo = {
         email: email.value,
         password: password.value,
