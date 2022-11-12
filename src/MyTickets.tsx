@@ -17,14 +17,18 @@ import {
   CardMedia,
   Typography,
 } from '@mui/material';
-// Components
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
+// Components
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+
+// Demo Data
+import games from './demoData/games';
+import defaultPurchases from './demoData/purchases';
 const RefundModal = React.lazy(
   () => import('./components/RefundModal/RefundModal')
 );
@@ -42,6 +46,46 @@ function MyTickets(): React.ReactElement {
   // State
   const loginContext = useLoginContext();
   const [refundModalOpen, setRefundModalOpen] = React.useState<boolean>(false);
+
+  // Get purchases (demo data)
+  const newPurchasesString = sessionStorage.getItem('purchases');
+  const newPurchases =
+    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+  const purchases = [...defaultPurchases, ...newPurchases];
+
+  const displayingObj = [];
+  for (let purchase of purchases) {
+    if (purchase.userEmail === loginContext.email) {
+      for (let game of games) {
+        if (game.id === purchase.gameId) {
+          const gameDate = parseInt(
+            `${game.year}${game.month.toLocaleString('en-US', {
+              minimumIntegerDigits: 2,
+            })}${game.day.toLocaleString('en-US', {
+              minimumIntegerDigits: 2,
+            })}`
+          );
+          const target = {
+            order: gameDate,
+            purchase: purchase,
+            game: game,
+          };
+          let idx = 0;
+          while (idx < displayingObj.length) {
+            if (displayingObj[idx].order > target.order) {
+              displayingObj.splice(idx, 0, target);
+              break;
+            }
+            idx++;
+          }
+          if(idx === displayingObj.length) {
+            displayingObj.push(target);
+          }
+          break;
+        }
+      }
+    }
+  }
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -79,32 +123,51 @@ function MyTickets(): React.ReactElement {
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
             Purchased Tickets
           </Typography>
-          {new Array(6).fill(0).map((_value, index) => {
+          {displayingObj.map((value) => {
             return (
-              <Card key={index} sx={{ ...cardStyle.Card, cursor: 'auto' }}>
+              <Card
+                key={value.purchase.id}
+                sx={{ ...cardStyle.Card, cursor: 'auto' }}
+              >
                 <Box sx={cardStyle.ImageBox}>
                   <CardMedia
                     component="img"
-                    image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Wisconsin_Badgers_logo.svg/350px-Wisconsin_Badgers_logo.svg.png"
-                    alt="Wisconsin Badgers Logo"
+                    image={value.game.opponentImgUrl}
+                    alt={value.game.opponent}
                   />
                 </Box>
                 <CardContent sx={cardStyle.InfoBox}>
                   <Typography variant="h5" component="div" noWrap>
-                    vs Opponent Team
+                    {`vs ${value.game.opponent}`}
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     color="text.secondary"
                     component="div"
                   >
-                    Nov. 11. 2022 | Confirmation: 1234
+                    {`${new Date(
+                      value.game.year,
+                      value.game.month - 1,
+                      value.game.day
+                    ).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}`}
                   </Typography>
-                  <Typography variant="body1">Platinum Ticket: 2</Typography>
-                  <Typography variant="body1">Gold Ticket: 1</Typography>
-                  <Typography variant="body1">Silver Ticket: 1</Typography>
+                  <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    component="div"
+                    noWrap
+                  >
+                    {`Confirmation: ${value.purchase.id}`}
+                  </Typography>
+                  <Typography variant="body1">{`Platinum Ticket: ${value.purchase.tickets.platinum}`}</Typography>
+                  <Typography variant="body1">{`Gold Ticket: ${value.purchase.tickets.gold}`}</Typography>
+                  <Typography variant="body1">{`Silver Ticket: ${value.purchase.tickets.silver}`}</Typography>
                   <Typography variant="body1" sx={cardStyle.GrowText}>
-                    Bronze Ticket: 2
+                    {`Bronze Ticket: ${value.purchase.tickets.bronze}`}
                   </Typography>
                   <Button
                     color="primary"
