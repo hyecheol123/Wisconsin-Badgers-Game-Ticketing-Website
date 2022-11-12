@@ -25,7 +25,7 @@ import { useLoginContext } from './LoginContext';
 import styles from './globalStyles/accountStyle';
 
 // Demo data
-import loginUser from './demoData/loginUser';
+import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React functional component to generate change password view
@@ -36,6 +36,11 @@ function ChangePW(): React.ReactElement {
   // React Router
   const { state } = useLocation();
   const navigate = useNavigate();
+
+  // Get users (demo data)
+  const newUsersString = sessionStorage.getItem('users');
+  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
+  const users = [...defaultLoginUser, ...newUsers];
 
   // State
   const loginContext = useLoginContext();
@@ -109,7 +114,16 @@ function ChangePW(): React.ReactElement {
       }
 
       // Submit API Request
-      if (currentPW === loginUser.password) {
+      const currentUserEmail = loginContext.email;
+      let currentUser;
+      for (const user of users) {
+        if (user.email === currentUserEmail) {
+          currentUser = user;
+          break;
+        }
+      }
+      if (currentPW === currentUser.password) {
+        // TODO: Password Change
         console.log(currentPW, newPW, confirmPW);
         goBack();
       } else {
@@ -121,6 +135,7 @@ function ChangePW(): React.ReactElement {
         setDisabled(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [confirmPW, currentPW, newPW, goBack, inputCheck]
   );
 

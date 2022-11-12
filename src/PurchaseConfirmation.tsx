@@ -21,7 +21,7 @@ import contentStyle from './globalStyles/contentStyle';
 import PurchaseConfirmationStyle from './PurchaseConfirmationStyle';
 
 // Demo data
-import loginUser from './demoData/loginUser';
+import defaultLoginUser from './demoData/loginUser';
 import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
 
@@ -79,6 +79,17 @@ function PurchaseConfirmation(): React.ReactElement {
   const newPurchases =
     newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
   const purchases = [...defaultPurchases, ...newPurchases];
+  // Retrieve user (demo data)
+  const newUsersString = sessionStorage.getItem('users');
+  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
+  const users = [...defaultLoginUser, ...newUsers];
+  let loginUser;
+  for (const user of users) {
+    if (user.email === loginContext.email) {
+      loginUser = user;
+      break;
+    }
+  }
 
   if (purchase === undefined) {
     for (const tempPurchase of purchases) {
@@ -132,12 +143,11 @@ function PurchaseConfirmation(): React.ReactElement {
               {`Confirmation No: ${purchaseid}`}
             </Typography>
             <Typography variant="body1" align="left">
-              {`Thanks for purchasing ${
-                purchase.tickets.platinum +
+              {`Thanks for purchasing ${purchase.tickets.platinum +
                 purchase.tickets.gold +
                 purchase.tickets.silver +
                 purchase.tickets.bronze
-              } tickets for `}
+                } tickets for `}
               <strong>{gameDateString}</strong> game with{' '}
               <strong>{game.opponent}</strong>. The tickets will be listed
               below. You need the confirmation number to retrieve your ticket at
