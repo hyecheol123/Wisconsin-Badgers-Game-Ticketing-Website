@@ -39,6 +39,8 @@ function MyTickets(): React.ReactElement {
   // State
   const loginContext = useLoginContext();
   const [refundModalOpen, setRefundModalOpen] = React.useState<boolean>(false);
+  // Refs
+  const containerRef = React.useRef(null);
 
   // Get purchases (demo data)
   const newPurchasesString = sessionStorage.getItem('purchases');
@@ -112,16 +114,18 @@ function MyTickets(): React.ReactElement {
     <>
       <Header />
       <Box sx={contentStyle.ContentWrapper}>
-        <Box sx={contentStyle.Content}>
+        <Box sx={contentStyle.Content} ref={containerRef}>
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
             Purchased Tickets
           </Typography>
           {displayingObj.map((value) => {
             return (
               <MyTicketCard
+                key={value.purchase.id}
                 navigate={navigate}
                 value={value}
                 openRefundModal={openRefundModal}
+                containerRef={containerRef}
               />
             );
           })}

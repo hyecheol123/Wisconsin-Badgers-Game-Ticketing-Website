@@ -30,6 +30,7 @@ type MyTicketCardProps = {
     purchase: Purchase;
   };
   openRefundModal: () => void;
+  containerRef: React.MutableRefObject<null>;
 };
 
 /**
@@ -39,7 +40,68 @@ type MyTicketCardProps = {
  * @return {React.ReactElement} React Element for card representing purchase
  */
 function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
-  const { navigate, value, openRefundModal } = props;
+  const { navigate, value, openRefundModal, containerRef } = props;
+  // States
+  const [maxTypographyWidth, setMaxTypographyWidth] =
+    React.useState<number>(797);
+  const [finishRender, setFinishRender] = React.useState<boolean>(false);
+  // Refs
+  const cardImgRef = React.useRef(null);
+  const cardContentRef = React.useRef(null);
+
+  // Function to update element widths to truncate texts accordingly
+  const updateMaxTypographyWidth = React.useCallback((): void => {
+    // When no ref set, do nothing
+    if (
+      !cardImgRef.current ||
+      !containerRef.current ||
+      !cardContentRef.current
+    ) {
+      return;
+    }
+
+    // Retrieve Width
+    const containerComputedStyle = window.getComputedStyle(
+      containerRef.current
+    );
+    const cardImgComputedStyle = window.getComputedStyle(cardImgRef.current);
+    const cardContentComputedStyle = window.getComputedStyle(
+      cardContentRef.current
+    );
+    setMaxTypographyWidth(
+      (containerRef.current as { clientWidth: number }).clientWidth -
+        parseFloat(containerComputedStyle.getPropertyValue('padding-left')) -
+        parseFloat(containerComputedStyle.getPropertyValue('padding-right')) -
+        (cardImgRef.current as { clientWidth: number }).clientWidth -
+        parseFloat(cardImgComputedStyle.getPropertyValue('margin-right')) -
+        parseFloat(cardContentComputedStyle.getPropertyValue('padding-left')) -
+        parseFloat(cardContentComputedStyle.getPropertyValue('padding-right'))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Add event listener to get element size on resize
+  React.useEffect(() => {
+    // Mount eventListener
+    window.addEventListener('resize', updateMaxTypographyWidth);
+
+    // Remove eventListener when component unmounts
+    return (): void => {
+      window.removeEventListener('resize', updateMaxTypographyWidth);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update cards when parameter changes
+  React.useEffect(() => {
+    updateMaxTypographyWidth();
+
+    // Re-render box when the max typography width changes
+    if (!finishRender) {
+      setFinishRender(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finishRender]);
 
   // EventHandler to reroute user to purchase confirmation when
   //   purchase card is clicked
@@ -57,15 +119,20 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
 
   return (
     <Card sx={{ ...cardStyle.Card, cursor: 'pointer' }} onClick={onClickCard}>
-      <Box sx={cardStyle.ImageBox}>
+      <Box sx={cardStyle.ImageBox} ref={cardImgRef}>
         <CardMedia
           component="img"
           image={value.game.opponentImgUrl}
           alt={value.game.opponent}
         />
       </Box>
-      <CardContent sx={cardStyle.InfoBox}>
-        <Typography variant="h5" component="div" noWrap>
+      <CardContent sx={cardStyle.InfoBox} ref={cardContentRef}>
+        <Typography
+          variant="h5"
+          component="div"
+          noWrap
+          sx={{ maxWidth: `${maxTypographyWidth}px` }}
+        >
           {`vs ${value.game.opponent}`}
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" component="div">
@@ -84,6 +151,7 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
           color="text.secondary"
           component="div"
           noWrap
+          sx={{ maxWidth: `${maxTypographyWidth}px` }}
         >
           {`Confirmation: ${value.purchase.id}`}
         </Typography>
