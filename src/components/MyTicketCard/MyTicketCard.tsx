@@ -45,13 +45,15 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
   //   purchase card is clicked
   const onClickCard: React.MouseEventHandler = React.useCallback((): void => {
     navigate(`/confirm/${value.purchase.id}`);
-  }, []);
+  }, [navigate, value]);
   // EventHandler to open refund modal when button clicked
-  const onClickButton: React.MouseEventHandler = React.useCallback((event: React.MouseEvent): void => {
-    openRefundModal();
-    event.stopPropagation();
-  }, []);
-
+  const onClickButton: React.MouseEventHandler = React.useCallback(
+    (event: React.MouseEvent): void => {
+      openRefundModal();
+      event.stopPropagation();
+    },
+    [openRefundModal]
+  );
 
   return (
     <Card sx={{ ...cardStyle.Card, cursor: 'pointer' }} onClick={onClickCard}>
@@ -85,9 +87,15 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
         >
           {`Confirmation: ${value.purchase.id}`}
         </Typography>
-        <Typography variant="body1">{`Platinum Ticket: ${value.purchase.tickets.platinum}`}</Typography>
-        <Typography variant="body1">{`Gold Ticket: ${value.purchase.tickets.gold}`}</Typography>
-        <Typography variant="body1">{`Silver Ticket: ${value.purchase.tickets.silver}`}</Typography>
+        <Typography variant="body1">
+          {`Platinum Ticket: ${value.purchase.tickets.platinum}`}
+        </Typography>
+        <Typography variant="body1">
+          {`Gold Ticket: ${value.purchase.tickets.gold}`}
+        </Typography>
+        <Typography variant="body1">
+          {`Silver Ticket: ${value.purchase.tickets.silver}`}
+        </Typography>
         <Typography variant="body1" sx={cardStyle.GrowText}>
           {`Bronze Ticket: ${value.purchase.tickets.bronze}`}
         </Typography>
