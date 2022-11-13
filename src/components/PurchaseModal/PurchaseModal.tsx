@@ -326,8 +326,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         open={isOpen}
         onClose={handleClose}
         closeAfterTransition
-        components={{ Backdrop }}
-        componentsProps={{ backdrop: { transitionDuration: 500 } }}
+        slots={{ backdrop: Backdrop }}
       >
         <Fade in={isOpen}>
           <Box sx={modalStyle.ModalWrapper}>
