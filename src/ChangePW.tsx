@@ -168,62 +168,64 @@ function ChangePW(): React.ReactElement {
             <Typography variant="h5" sx={styles.Title}>
               Change Password
             </Typography>
-            <form onSubmit={formSubmit} style={styles.FormWrapper}>
-              <TextField
-                disabled={disabled}
-                size="small"
-                variant="outlined"
-                color="primary"
-                label="Current Password"
-                type="password"
-                margin="normal"
-                value={currentPW}
-                onChange={onCurrentPWChange}
-                sx={styles.TextField}
-              />
-              <TextField
-                disabled={disabled}
-                size="small"
-                variant="outlined"
-                color="primary"
-                label="New Password"
-                type="password"
-                margin="normal"
-                value={newPW}
-                onChange={onNewPWChange}
-                sx={styles.TextField}
-              />
-              <TextField
-                disabled={disabled}
-                size="small"
-                variant="outlined"
-                color="primary"
-                label="Confirm Password"
-                type="password"
-                margin="normal"
-                value={confirmPW}
-                onChange={onConfirmPWChange}
-                sx={styles.TextField}
-              />
-              <Box sx={styles.ButtonWrapper}>
-                <Button
-                  type="submit"
+            <form onSubmit={formSubmit} style={styles.Form}>
+              <Box sx={styles.FormContent}>
+                <TextField
+                  disabled={disabled}
+                  size="small"
+                  variant="outlined"
                   color="primary"
-                  variant="contained"
+                  label="Current Password"
+                  type="password"
+                  margin="normal"
+                  value={currentPW}
+                  onChange={onCurrentPWChange}
+                  sx={styles.TextField}
+                />
+                <TextField
                   disabled={disabled}
-                  sx={styles.Button}
-                >
-                  Change PW
-                </Button>
-                <Button
-                  color="secondary"
-                  variant="contained"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  label="New Password"
+                  type="password"
+                  margin="normal"
+                  value={newPW}
+                  onChange={onNewPWChange}
+                  sx={styles.TextField}
+                />
+                <TextField
                   disabled={disabled}
-                  sx={styles.Button}
-                  onClick={goBack}
-                >
-                  Cancel
-                </Button>
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  label="Confirm Password"
+                  type="password"
+                  margin="normal"
+                  value={confirmPW}
+                  onChange={onConfirmPWChange}
+                  sx={styles.TextField}
+                />
+                <Box sx={styles.ButtonWrapper}>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    disabled={disabled}
+                    sx={styles.Button}
+                  >
+                    Change PW
+                  </Button>
+                  <Button
+                    color="secondary"
+                    variant="contained"
+                    disabled={disabled}
+                    sx={styles.Button}
+                    onClick={goBack}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
               </Box>
             </form>
           </Box>
