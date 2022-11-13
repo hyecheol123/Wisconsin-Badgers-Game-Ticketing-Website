@@ -193,7 +193,12 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
         </CardContent>
       </Card>
       {refundModalOpen && (
-        <RefundModal isOpen={refundModalOpen} handleClose={closeRefundModal} />
+        <RefundModal
+          isOpen={refundModalOpen}
+          handleClose={closeRefundModal}
+          game={value.game}
+          purchase={value.purchase}
+        />
       )}
     </>
   );

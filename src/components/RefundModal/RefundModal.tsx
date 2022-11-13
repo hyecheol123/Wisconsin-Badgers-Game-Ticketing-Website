@@ -22,10 +22,15 @@ import {
 } from '@mui/material';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
+// Types
+import Game from '../../globalTypes/data/Game';
+import Purchase from '../../globalTypes/data/Purchase';
 
 // Type for the component's props
 type RefundModalProps = {
   isOpen: boolean;
+  game: Game;
+  purchase: Purchase;
   handleClose: () => void;
 };
 
@@ -36,13 +41,21 @@ type RefundModalProps = {
  * @return {React.ReactElement} Renders Refund Request Modal
  */
 function RefundModal(props: RefundModalProps): React.ReactElement {
-  const { isOpen, handleClose } = props;
+  const { isOpen, game, purchase, handleClose } = props;
 
   // State
-  const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(2);
-  const [goldTicketCnt, setGoldTicketCnt] = React.useState<number>(1);
-  const [silverTicketCnt, setSilverTicketCnt] = React.useState<number>(1);
-  const [bronzeTicketCnt, setBronzeTicketCnt] = React.useState<number>(2);
+  const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(
+    purchase.tickets.platinum
+  );
+  const [goldTicketCnt, setGoldTicketCnt] = React.useState<number>(
+    purchase.tickets.gold
+  );
+  const [silverTicketCnt, setSilverTicketCnt] = React.useState<number>(
+    purchase.tickets.silver
+  );
+  const [bronzeTicketCnt, setBronzeTicketCnt] = React.useState<number>(
+    purchase.tickets.bronze
+  );
   const [note, setNote] = React.useState<string>('');
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
@@ -127,11 +140,15 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
     ]
   );
 
-  const uptoTwo = [
-    { value: 0, label: 0 },
-    { value: 1, label: 1 },
-    { value: 2, label: 2 },
-  ];
+  const gameDateString = new Date(
+    game.year,
+    game.month - 1,
+    game.day
+  ).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 
   return (
     <>
@@ -152,8 +169,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
               Request Refund
             </Typography>
             <Typography variant="body1" component="div" align="left">
-              You are requesting refund for Nov. 11. 2022's game with Opponent
-              Team.
+              {`You are requesting refund for game of ${gameDateString} with ${game.opponent}.`}
             </Typography>
             <Divider sx={modalStyle.DividerMargin} />
             <Box>
@@ -167,14 +183,13 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   helperText="Please choose the number of platinum tickets you want to refund"
                   sx={modalStyle.TextFieldMargin}
                 >
-                  {uptoTwo.map((option) => (
-                    <MenuItem
-                      key={`Platinum-${option.value}`}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  {new Array(purchase.tickets.platinum + 1)
+                    .fill(0)
+                    .map((_value, index) => (
+                      <MenuItem key={`Platinum-${index}`} value={index}>
+                        {index}
+                      </MenuItem>
+                    ))}
                 </TextField>
                 <TextField
                   select
@@ -185,29 +200,30 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   helperText="Please choose the number of gold tickets you want to refund"
                   sx={modalStyle.TextFieldMargin}
                 >
-                  {uptoTwo.slice(0, 2).map((option) => (
-                    <MenuItem key={`Gold-${option.value}`} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  {new Array(purchase.tickets.gold + 1)
+                    .fill(0)
+                    .map((_value, index) => (
+                      <MenuItem key={`Gold-${index}`} value={index}>
+                        {index}
+                      </MenuItem>
+                    ))}
                 </TextField>
                 <TextField
                   select
                   fullWidth
                   label="Silver Tickets"
-                  value={goldTicketCnt}
+                  value={silverTicketCnt}
                   onChange={onSilverTicketCntChange}
                   helperText="Please choose the number of silver tickets you want to refund"
                   sx={modalStyle.TextFieldMargin}
                 >
-                  {uptoTwo.slice(0, 2).map((option) => (
-                    <MenuItem
-                      key={`Silver-${option.value}`}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  {new Array(purchase.tickets.silver + 1)
+                    .fill(0)
+                    .map((_value, index) => (
+                      <MenuItem key={`Silver-${index}`} value={index}>
+                        {index}
+                      </MenuItem>
+                    ))}
                 </TextField>
                 <TextField
                   select
@@ -218,14 +234,13 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
                   helperText="Please choose the number of bronze tickets you want to refund"
                   sx={modalStyle.TextFieldMargin}
                 >
-                  {uptoTwo.map((option) => (
-                    <MenuItem
-                      key={`Bronze-${option.value}`}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  {new Array(purchase.tickets.bronze + 1)
+                    .fill(0)
+                    .map((_value, index) => (
+                      <MenuItem key={`Bronze-${index}`} value={index}>
+                        {index}
+                      </MenuItem>
+                    ))}
                 </TextField>
                 <TextField
                   label="Note/Memo"
