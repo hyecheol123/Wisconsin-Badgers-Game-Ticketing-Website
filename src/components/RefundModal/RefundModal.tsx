@@ -239,8 +239,8 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
             };
 
             newPurchases.push(remainingTicketPurchase);
-            sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
           }
+          sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
           break;
         }
       }
