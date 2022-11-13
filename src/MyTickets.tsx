@@ -23,9 +23,6 @@ import MyTicketCard from './components/MyTicketCard/MyTicketCard';
 // Demo Data
 import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
-const RefundModal = React.lazy(
-  () => import('./components/RefundModal/RefundModal')
-);
 
 /**
  * React functional component for MyTickets
@@ -39,7 +36,6 @@ function MyTickets(): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
-  const [refundModalOpen, setRefundModalOpen] = React.useState<boolean>(false);
   // Refs
   const containerRef = React.useRef(null);
 
@@ -103,14 +99,6 @@ function MyTickets(): React.ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Function to open/close refund modal
-  const openRefundModal = React.useCallback((): void => {
-    setRefundModalOpen(true);
-  }, []);
-  const closeRefundModal = React.useCallback((): void => {
-    setRefundModalOpen(false);
-  }, []);
-
   // Function to move to the game list page
   const gameList = React.useCallback((): void => {
     navigate('/games');
@@ -131,7 +119,6 @@ function MyTickets(): React.ReactElement {
                   key={value.purchase.id}
                   navigate={navigate}
                   value={value}
-                  openRefundModal={openRefundModal}
                   containerRef={containerRef}
                 />
               );
@@ -164,12 +151,6 @@ function MyTickets(): React.ReactElement {
             </Box>
           )}
         </Box>
-        {refundModalOpen && (
-          <RefundModal
-            isOpen={refundModalOpen}
-            handleClose={closeRefundModal}
-          />
-        )}
       </Box>
       <Footer />
     </>
