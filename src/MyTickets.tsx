@@ -12,6 +12,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
+// Types
+import Purchase from './globalTypes/data/Purchase';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import MyTicketsStyle from './MyTicketsStyle';
@@ -23,9 +25,13 @@ import MyTicketCard from './components/MyTicketCard/MyTicketCard';
 // Demo Data
 import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
-const RefundModal = React.lazy(
-  () => import('./components/RefundModal/RefundModal')
-);
+import Game from './globalTypes/data/Game';
+
+type DisplayObj = {
+  order: number;
+  purchase: Purchase;
+  game: Game;
+};
 
 /**
  * React functional component for MyTickets
@@ -39,49 +45,64 @@ function MyTickets(): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
-  const [refundModalOpen, setRefundModalOpen] = React.useState<boolean>(false);
+  const [displayingObj, setDisplayingObj] = React.useState<DisplayObj[]>([]);
+  const [needRefresh, setNeedRefresh] = React.useState<boolean>(true);
   // Refs
   const containerRef = React.useRef(null);
 
-  // Get purchases (demo data)
-  const newPurchasesString = sessionStorage.getItem('purchases');
-  const newPurchases =
-    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
-  const purchases = [...defaultPurchases, ...newPurchases];
+  // Function to generate displaying data
+  const getData = React.useCallback((): DisplayObj[] => {
+    // Get purchases (demo data)
+    const newPurchasesString = sessionStorage.getItem('purchases');
+    const newPurchases =
+      newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
+    const purchases = [...defaultPurchases, ...newPurchases];
 
-  const displayingObj = [];
-  for (const purchase of purchases) {
-    if (purchase.userEmail === loginContext.email) {
-      for (const game of games) {
-        if (game.id === purchase.gameId) {
-          const gameDate = parseInt(
-            `${game.year}${game.month.toLocaleString('en-US', {
-              minimumIntegerDigits: 2,
-            })}${game.day.toLocaleString('en-US', {
-              minimumIntegerDigits: 2,
-            })}`
-          );
-          const target = {
-            order: gameDate,
-            purchase: purchase,
-            game: game,
-          };
-          let idx = 0;
-          while (idx < displayingObj.length) {
-            if (displayingObj[idx].order > target.order) {
-              displayingObj.splice(idx, 0, target);
-              break;
+    const displayingObj = [];
+    for (const purchase of purchases) {
+      if (purchase.isValid && purchase.userEmail === loginContext.email) {
+        for (const game of games) {
+          if (game.id === purchase.gameId) {
+            const gameDate = parseInt(
+              `${game.year}${game.month.toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+              })}${game.day.toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+              })}`
+            );
+            const target = {
+              order: gameDate,
+              purchase: purchase,
+              game: game,
+            };
+            let idx = 0;
+            while (idx < displayingObj.length) {
+              if (displayingObj[idx].order > target.order) {
+                displayingObj.splice(idx, 0, target);
+                break;
+              }
+              idx++;
             }
-            idx++;
+            if (idx === displayingObj.length) {
+              displayingObj.push(target);
+            }
+            break;
           }
-          if (idx === displayingObj.length) {
-            displayingObj.push(target);
-          }
-          break;
         }
       }
     }
-  }
+    return displayingObj;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Get Displaying data if needed
+  React.useEffect(() => {
+    if (needRefresh) {
+      setDisplayingObj(getData());
+      setNeedRefresh(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needRefresh]);
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -103,18 +124,15 @@ function MyTickets(): React.ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Function to open/close refund modal
-  const openRefundModal = React.useCallback((): void => {
-    setRefundModalOpen(true);
-  }, []);
-  const closeRefundModal = React.useCallback((): void => {
-    setRefundModalOpen(false);
-  }, []);
-
   // Function to move to the game list page
   const gameList = React.useCallback((): void => {
     navigate('/games');
   }, [navigate]);
+
+  // Function to reload data
+  const reloadData = React.useCallback((): void => {
+    setNeedRefresh(true);
+  }, []);
 
   return (
     <>
@@ -131,8 +149,8 @@ function MyTickets(): React.ReactElement {
                   key={value.purchase.id}
                   navigate={navigate}
                   value={value}
-                  openRefundModal={openRefundModal}
                   containerRef={containerRef}
+                  reloadData={reloadData}
                 />
               );
             })
@@ -164,12 +182,6 @@ function MyTickets(): React.ReactElement {
             </Box>
           )}
         </Box>
-        {refundModalOpen && (
-          <RefundModal
-            isOpen={refundModalOpen}
-            handleClose={closeRefundModal}
-          />
-        )}
       </Box>
       <Footer />
     </>

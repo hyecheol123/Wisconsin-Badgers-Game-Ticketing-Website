@@ -10,6 +10,7 @@ type Purchase = {
   gameId: string;
   userEmail: string;
   isValid: boolean;
+  refundMemo?: string;
   tickets: {
     platinum: number;
     gold: number;

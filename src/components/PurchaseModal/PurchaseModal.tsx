@@ -262,13 +262,19 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       const newPurchases =
         newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
       const purchaseId = sha512(
-        loginUser?.email + gameId + new Date().toISOString()
+        loginUser?.email +
+          gameId +
+          new Date().toISOString() +
+          ticketCounts.platinum +
+          ticketCounts.gold +
+          ticketCounts.silver +
+          ticketCounts.bronze
       )
         .toString(base64)
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .substring(0, 18)
-        .toLowerCase();
+        .toUpperCase();
       const purchaseInfo = {
         id: purchaseId,
         gameId: gameId,

@@ -20,7 +20,7 @@ Website: https://wisconsin-badgers-ticket.web.app/
   - [x] Routing
 
 **Milestone 2b** *(Nov. 16. 2022)*: Functioning Demo with Demo Dataset  
-  - [ ] Add demo dataset (a JSON file)
+  - [x] Add demo dataset (a JSON file)
   - [ ] Display demo data accordingly
   - [ ] Interact with user's input
   - [x] Optimize Loading - Lazy Loading
@@ -125,6 +125,7 @@ Use `Google Firebase Hosting` to deploy this website.
     gameId: string
     userEmail: string
     isValid: boolean
+    refundMemo?: string
     tickets: {
       platinum: number
       gold: number
