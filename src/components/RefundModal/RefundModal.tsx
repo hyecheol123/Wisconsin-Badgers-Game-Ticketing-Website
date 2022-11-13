@@ -8,6 +8,7 @@
 import React from 'react';
 // Material UI
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -17,6 +18,7 @@ import {
   FormControlLabel,
   MenuItem,
   Modal,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
@@ -25,6 +27,7 @@ import modalStyle from '../../globalStyles/modalStyle';
 // Types
 import Game from '../../globalTypes/data/Game';
 import Purchase from '../../globalTypes/data/Purchase';
+import Error from '../../globalTypes/FormError';
 
 // Type for the component's props
 type RefundModalProps = {
@@ -59,6 +62,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
   const [note, setNote] = React.useState<string>('');
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -108,7 +112,64 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
     []
   );
 
-  // TODO: Validity Check
+  // EventHandler to close alert
+  const closeAlert = React.useCallback(() => {
+    setError({ error: false, msg: '' });
+  }, []);
+
+  // Validity Check
+  const validityCheck = React.useCallback((): boolean => {
+    // Agree to acknowledgement
+    if (!acknowledge) {
+      setError({
+        error: true,
+        msg: 'You have to agree with all terms and conditions',
+      });
+      return false;
+    }
+
+    // Check the number of tickets [0, purchasedTicketNum]
+    if (
+      platinumTicketCnt < 0 ||
+      platinumTicketCnt > purchase.tickets.platinum
+    ) {
+      setError({
+        error: true,
+        msg: 'Invalid Number of Platinum Tickets to refund',
+      });
+      return false;
+    }
+    if (goldTicketCnt < 0 || goldTicketCnt > purchase.tickets.gold) {
+      setError({
+        error: true,
+        msg: 'Invalid Number of Gold Tickets to refund',
+      });
+      return false;
+    }
+    if (silverTicketCnt < 0 || silverTicketCnt > purchase.tickets.silver) {
+      setError({
+        error: true,
+        msg: 'Invalid Number of Silver Tickets to refund',
+      });
+      return false;
+    }
+    if (bronzeTicketCnt < 0 || bronzeTicketCnt > purchase.tickets.bronze) {
+      setError({
+        error: true,
+        msg: 'Invalid Number of Bronze Tickets to refund',
+      });
+      return false;
+    }
+
+    return true;
+  }, [
+    acknowledge,
+    platinumTicketCnt,
+    goldTicketCnt,
+    silverTicketCnt,
+    bronzeTicketCnt,
+    purchase,
+  ]);
 
   // Submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
@@ -116,7 +177,11 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
       event.preventDefault();
       setDisabled(true);
 
-      // TODO: Validity Check
+      // Validity Check
+      if (!validityCheck()) {
+        setDisabled(false);
+        return;
+      }
 
       // TODO: Submit API request
       console.log('Refund Request');
@@ -286,6 +351,16 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
           </Box>
         </Fade>
       </Modal>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.error}
+        onClose={closeAlert}
+      >
+        <Alert onClose={closeAlert} severity="error">
+          {error.msg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
