@@ -243,6 +243,10 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
           break;
         }
       }
+
+      alert(
+        'Ticket Refunded - For partial refund, new prchase has been created.'
+      );
       handleClose();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
