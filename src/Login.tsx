@@ -166,49 +166,51 @@ function Login(): React.ReactElement {
             <Typography variant="h5" sx={styles.Title}>
               Login
             </Typography>
-            <form onSubmit={formSubmit} style={styles.FormWrapper}>
-              <TextField
-                disabled={disabled}
-                size="small"
-                variant="outlined"
-                color="primary"
-                label="email"
-                margin="normal"
-                value={email}
-                onChange={onEmailChange}
-                sx={styles.TextField}
-              ></TextField>
-              <TextField
-                disabled={disabled}
-                size="small"
-                variant="outlined"
-                color="primary"
-                label="password"
-                type="password"
-                margin="normal"
-                value={password}
-                onChange={onPasswordChange}
-                sx={styles.TextField}
-              ></TextField>
-              <Box sx={styles.ButtonWrapper}>
-                <Button
-                  type="submit"
+            <form onSubmit={formSubmit} style={styles.Form}>
+              <Box sx={styles.FormContent}>
+                <TextField
+                  disabled={disabled}
+                  size="small"
+                  variant="outlined"
                   color="primary"
-                  variant="contained"
+                  label="email"
+                  margin="normal"
+                  value={email}
+                  onChange={onEmailChange}
+                  sx={styles.TextField}
+                ></TextField>
+                <TextField
                   disabled={disabled}
-                  sx={styles.Button}
-                >
-                  Login
-                </Button>
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  disabled={disabled}
-                  sx={styles.Button}
-                  onClick={goBack}
-                >
-                  Cancel
-                </Button>
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  label="password"
+                  type="password"
+                  margin="normal"
+                  value={password}
+                  onChange={onPasswordChange}
+                  sx={styles.TextField}
+                ></TextField>
+                <Box sx={styles.ButtonWrapper}>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    disabled={disabled}
+                    sx={styles.Button}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    color="secondary"
+                    variant="contained"
+                    disabled={disabled}
+                    sx={styles.Button}
+                    onClick={goBack}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
               </Box>
             </form>
             <Link onClick={toSignUp} variant="body2" sx={styles.SignUpLink}>

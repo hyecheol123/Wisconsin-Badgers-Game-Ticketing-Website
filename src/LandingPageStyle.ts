@@ -14,7 +14,7 @@ const LandingPageStyle = {
   BodyWrapper: { width: '100%', padding: '0 0.5em' },
   StadiumPhoto: { width: '70%', margin: '2.5em 0 1em 0' },
   CheckoutMsg: { margin: '1.5em 0 1em 0' },
-  CheckoutBtn: { margin: '1em 0 1.5em 0', flexGrow: 0 },
+  CheckoutBtn: { margin: '2em 0 2em 0', flexGrow: 0 },
 };
 
 export default LandingPageStyle;

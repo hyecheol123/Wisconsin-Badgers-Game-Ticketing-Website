@@ -10,6 +10,9 @@ import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Material UI
 import { Box, Button, Typography } from '@mui/material';
+// Types
+import Purchase from './globalTypes/data/Purchase';
+import Game from './globalTypes/data/Game';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -39,8 +42,10 @@ function PurchaseConfirmation(): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
-  const [purchase, setPurchase] = React.useState();
-  const [game, setGame] = React.useState();
+  const [purchase, setPurchase] = React.useState<Purchase | undefined>(
+    undefined
+  );
+  const [game, setGame] = React.useState<Game | undefined>(undefined);
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {

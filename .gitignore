@@ -240,3 +240,6 @@ modules.xml
 
 ## Firebase
 .firebase/
+
+## VSCode
+.vscode/

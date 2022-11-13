@@ -150,7 +150,9 @@ function GameDetail(): React.ReactElement {
   }
 
   // Calculate the remaining seat for each game tier using purchase history
-  const maxSeats = {
+  const maxSeats: {
+    [key: string]: number;
+  } = {
     platinum: game.ticketCount.platinum,
     gold: game.ticketCount.gold,
     silver: game.ticketCount.silver,
@@ -367,7 +369,7 @@ function GameDetail(): React.ReactElement {
             <PurchaseModal
               isOpen={purchaseModalOpen}
               handleClose={closePurchaseModal}
-              gameId={gameid}
+              gameId={gameid as string}
               gameDateString={gameDateString}
               opponentTeam={game.opponent}
               ticketCounts={{

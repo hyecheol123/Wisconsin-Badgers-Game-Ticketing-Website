@@ -9,6 +9,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 // Material UI
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { TypographyOptions } from '@mui/material/styles/createTypography';
 import { CssBaseline } from '@mui/material';
 import { blue, red } from '@mui/material/colors';
 // Router
@@ -33,6 +34,15 @@ const ErrorPage = React.lazy(() => import('./components/ErrorPage/ErrorPage'));
 
 // MUI Theme (Setup Font family and Typogrpahy)
 declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    tcPageTitle?: React.CSSProperties;
+    tcCaption?: React.CSSProperties;
+    tcTitle?: React.CSSProperties;
+    tcSubTitle?: React.CSSProperties;
+    tcBody?: React.CSSProperties;
+    tcBodyList?: React.CSSProperties;
+  }
+
   interface TypographyVariantOptions {
     tcPageTitle?: React.CSSProperties;
     tcCaption?: React.CSSProperties;
@@ -51,6 +61,14 @@ declare module '@mui/material/Typography' {
     tcBody: true;
     tcBodyList: true;
   }
+}
+interface ExtendedTypographyOptions extends TypographyOptions {
+  tcPageTitle: React.CSSProperties;
+  tcCaption: React.CSSProperties;
+  tcTitle: React.CSSProperties;
+  tcSubTitle: React.CSSProperties;
+  tcBody: React.CSSProperties;
+  tcBodyList: React.CSSProperties;
 }
 const breakpoints = {
   values: {
@@ -129,7 +147,7 @@ const theme = createTheme({
       fontSize: '14px',
       color: '#595959',
     },
-  },
+  } as ExtendedTypographyOptions,
   components: {
     MuiTypography: {
       defaultProps: {

@@ -29,6 +29,7 @@ import {
 } from '@mui/material';
 // Global Type
 import Error from '../../globalTypes/FormError';
+import User from '../../globalTypes/data/User';
 // Custom Hooks to load Login Context
 import { useLoginContext } from '../../LoginContext';
 // Style
@@ -88,7 +89,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   const newUsersString = sessionStorage.getItem('users');
   const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
   const users = [...defaultLoginUser, ...newUsers];
-  let loginUser;
+  let loginUser: undefined | User;
   for (const user of users) {
     if (user.email === loginContext.email) {
       loginUser = user;
@@ -261,7 +262,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       const newPurchases =
         newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
       const purchaseId = sha512(
-        loginUser.email + gameId + new Date().toISOString()
+        loginUser?.email + gameId + new Date().toISOString()
       )
         .toString(base64)
         .replace(/\+/g, '-')
@@ -271,7 +272,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       const purchaseInfo = {
         id: purchaseId,
         gameId: gameId,
-        userEmail: loginUser.email,
+        userEmail: loginUser?.email,
         isValid: true,
         tickets: {
           platinum: ticketCounts.platinum,
@@ -325,8 +326,7 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         open={isOpen}
         onClose={handleClose}
         closeAfterTransition
-        components={{ Backdrop }}
-        componentsProps={{ backdrop: { transitionDuration: 500 } }}
+        slots={{ backdrop: Backdrop }}
       >
         <Fade in={isOpen}>
           <Box sx={modalStyle.ModalWrapper}>

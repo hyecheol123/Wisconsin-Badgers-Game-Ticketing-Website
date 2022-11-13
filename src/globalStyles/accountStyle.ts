@@ -21,7 +21,10 @@ const accountStyle = {
     left: '50%',
     transform: 'translate(calc(-50% - 10px),-50%)',
   },
-  FormWrapper: {
+  Form: {
+    width: '100%',
+  },
+  FormContent: {
     display: 'inline-flex',
     flexDirection: 'column',
     width: '100%',

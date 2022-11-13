@@ -1,7 +1,9 @@
 // Need to combine the following array with the array saved in
 //   the sessionStorage with key 'purchases'
 
-const purchases = [
+import Purchase from '../globalTypes/data/Purchase';
+
+const purchases: Purchase[] = [
   {
     id: 'g1-001',
     gameId: '1',
