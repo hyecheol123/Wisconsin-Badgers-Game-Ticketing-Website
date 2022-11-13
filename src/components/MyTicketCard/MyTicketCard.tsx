@@ -32,6 +32,7 @@ type MyTicketCardProps = {
     purchase: Purchase;
   };
   containerRef: React.MutableRefObject<null>;
+  reloadData: () => void;
 };
 
 /**
@@ -41,7 +42,7 @@ type MyTicketCardProps = {
  * @return {React.ReactElement} React Element for card representing purchase
  */
 function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
-  const { navigate, value, containerRef } = props;
+  const { navigate, value, containerRef, reloadData } = props;
   // States
   const [maxTypographyWidth, setMaxTypographyWidth] =
     React.useState<number>(797);
@@ -198,6 +199,7 @@ function MyTicketCard(props: MyTicketCardProps): React.ReactElement {
           handleClose={closeRefundModal}
           game={value.game}
           purchase={value.purchase}
+          reloadData={reloadData}
         />
       )}
     </>

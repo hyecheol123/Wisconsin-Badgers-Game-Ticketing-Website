@@ -38,6 +38,7 @@ type RefundModalProps = {
   game: Game;
   purchase: Purchase;
   handleClose: () => void;
+  reloadData: () => void;
 };
 
 /**
@@ -47,7 +48,7 @@ type RefundModalProps = {
  * @return {React.ReactElement} Renders Refund Request Modal
  */
 function RefundModal(props: RefundModalProps): React.ReactElement {
-  const { isOpen, game, purchase, handleClose } = props;
+  const { isOpen, game, purchase, handleClose, reloadData } = props;
 
   // State
   const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(
@@ -244,6 +245,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
         }
       }
 
+      reloadData();
       alert(
         'Ticket Refunded - For partial refund, new prchase has been created.'
       );
