@@ -9,11 +9,12 @@ import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
 // Material UI
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
+import MyTicketsStyle from './MyTicketsStyle';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -110,6 +111,11 @@ function MyTickets(): React.ReactElement {
     setRefundModalOpen(false);
   }, []);
 
+  // Function to move to the game list page
+  const gameList = React.useCallback((): void => {
+    navigate('/games');
+  }, [navigate]);
+
   return (
     <>
       <Header />
@@ -118,17 +124,45 @@ function MyTickets(): React.ReactElement {
           <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
             Purchased Tickets
           </Typography>
-          {displayingObj.map((value) => {
-            return (
-              <MyTicketCard
-                key={value.purchase.id}
-                navigate={navigate}
-                value={value}
-                openRefundModal={openRefundModal}
-                containerRef={containerRef}
-              />
-            );
-          })}
+          {displayingObj.length !== 0 ? (
+            displayingObj.map((value) => {
+              return (
+                <MyTicketCard
+                  key={value.purchase.id}
+                  navigate={navigate}
+                  value={value}
+                  openRefundModal={openRefundModal}
+                  containerRef={containerRef}
+                />
+              );
+            })
+          ) : (
+            <Box sx={MyTicketsStyle.NoTicketContentWrapper}>
+              <Box sx={MyTicketsStyle.NoTicketMsgWrapper}>
+                <Typography
+                  variant="h6"
+                  align="center"
+                  sx={MyTicketsStyle.NoTicketMsg}
+                >
+                  You have not purchased any tickets!!
+                </Typography>
+                <Typography
+                  variant="h6"
+                  align="center"
+                  sx={MyTicketsStyle.NoTicketMsg}
+                >
+                  Check out the game tickets now!!
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                onClick={gameList}
+                sx={MyTicketsStyle.CheckoutBtn}
+              >
+                Explore Tickets
+              </Button>
+            </Box>
+          )}
         </Box>
         {refundModalOpen && (
           <RefundModal
