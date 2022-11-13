@@ -47,7 +47,7 @@ function MyTickets(): React.ReactElement {
 
   const displayingObj = [];
   for (const purchase of purchases) {
-    if (purchase.userEmail === loginContext.email) {
+    if (purchase.isValid && purchase.userEmail === loginContext.email) {
       for (const game of games) {
         if (game.id === purchase.gameId) {
           const gameDate = parseInt(
