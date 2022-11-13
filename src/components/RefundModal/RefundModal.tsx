@@ -4,6 +4,9 @@
  * @author Hyecheol (Jerry) Jang <hyecheol.jang@wisc.edu>
  */
 
+// CryptoJS
+import sha512 from 'crypto-js/sha512';
+import base64 from 'crypto-js/enc-base64';
 // React
 import React from 'react';
 // Material UI
@@ -63,6 +66,11 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [error, setError] = React.useState<Error>({ error: false, msg: '' });
+
+  // Get purchases (demo data)
+  const newPurchasesString = sessionStorage.getItem('purchases');
+  const newPurchases: Purchase[] =
+    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -184,14 +192,57 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
       }
 
       // TODO: Submit API request
-      console.log('Refund Request');
-      console.log(`Platinum Ticket Cnt: ${platinumTicketCnt}`);
-      console.log(`Gold Ticket Cnt: ${goldTicketCnt}`);
-      console.log(`Silver Ticket Cnt: ${silverTicketCnt}`);
-      console.log(`Bronze Ticket Cnt: ${bronzeTicketCnt}`);
-      console.log(`Note: ${note}`);
-      console.log(`Acknowledgement: ${acknowledge}`);
+      const totalTicketsCnt =
+        purchase.tickets.platinum +
+        purchase.tickets.gold +
+        purchase.tickets.silver +
+        purchase.tickets.bronze;
+      const requestedTicketsCnt =
+        platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
+      for (const targetPurchase of newPurchases) {
+        if (targetPurchase.id === purchase.id) {
+          // Invalidate the purchase
+          targetPurchase.isValid = false;
+          if (note !== '') {
+            targetPurchase.refundMemo = note;
+          }
 
+          // If user request for partial refund, create new purchase
+          if (totalTicketsCnt !== requestedTicketsCnt) {
+            const remainingTicketsCnt = {
+              platinum: purchase.tickets.platinum - platinumTicketCnt,
+              gold: purchase.tickets.gold - goldTicketCnt,
+              silver: purchase.tickets.silver - silverTicketCnt,
+              bronze: purchase.tickets.bronze - bronzeTicketCnt,
+            };
+
+            const remainingTicketPurchase: Purchase = {
+              id: sha512(
+                targetPurchase.userEmail +
+                  targetPurchase.gameId +
+                  new Date().toISOString() +
+                  remainingTicketsCnt.platinum +
+                  remainingTicketsCnt.gold +
+                  remainingTicketsCnt.silver +
+                  remainingTicketsCnt.bronze
+              )
+                .toString(base64)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .substring(0, 18)
+                .toUpperCase(),
+              gameId: targetPurchase.gameId,
+              userEmail: targetPurchase.userEmail,
+              isValid: true,
+              tickets: remainingTicketsCnt,
+            };
+
+            newPurchases.push(remainingTicketPurchase);
+            sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
+          }
+          break;
+        }
+      }
       handleClose();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
