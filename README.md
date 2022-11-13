@@ -21,14 +21,14 @@ Website: https://wisconsin-badgers-ticket.web.app/
 
 **Milestone 2b** *(Nov. 16. 2022)*: Functioning Demo with Demo Dataset  
   - [x] Add demo dataset (a JSON file)
-  - [ ] Display demo data accordingly
-  - [ ] Interact with user's input
+  - [x] Display demo data accordingly
+  - [x] Interact with user's input
   - [x] Optimize Loading - Lazy Loading
 
 **Milestone 3** *(Dec. 07. 2022)*: Full Website  
   - [ ] Firebase database
   - [ ] Summary Report & Presentation
-  - [ ] Publish
+  - [x] Publish
 
 ## Quick Start Guide
 
@@ -102,8 +102,8 @@ Use `Google Firebase Hosting` to deploy this website.
     year: number
     month: number
     day: number
-    hour: number (optional)
-    minute: number (optional)
+    hour?: number
+    minute?: number
     ticketCount: {
       platinum: number
       gold: number
