@@ -9,22 +9,15 @@ import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
 // Material UI
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
-import cardStyle from './globalStyles/cardStyle';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import MyTicketCard from './components/MyTicketCard/MyTicketCard';
 
 // Demo Data
 import games from './demoData/games';
@@ -125,60 +118,11 @@ function MyTickets(): React.ReactElement {
           </Typography>
           {displayingObj.map((value) => {
             return (
-              <Card
-                key={value.purchase.id}
-                sx={{ ...cardStyle.Card, cursor: 'auto' }}
-              >
-                <Box sx={cardStyle.ImageBox}>
-                  <CardMedia
-                    component="img"
-                    image={value.game.opponentImgUrl}
-                    alt={value.game.opponent}
-                  />
-                </Box>
-                <CardContent sx={cardStyle.InfoBox}>
-                  <Typography variant="h5" component="div" noWrap>
-                    {`vs ${value.game.opponent}`}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    color="text.secondary"
-                    component="div"
-                  >
-                    {`${new Date(
-                      value.game.year,
-                      value.game.month - 1,
-                      value.game.day
-                    ).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}`}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    color="text.secondary"
-                    component="div"
-                    noWrap
-                  >
-                    {`Confirmation: ${value.purchase.id}`}
-                  </Typography>
-                  <Typography variant="body1">{`Platinum Ticket: ${value.purchase.tickets.platinum}`}</Typography>
-                  <Typography variant="body1">{`Gold Ticket: ${value.purchase.tickets.gold}`}</Typography>
-                  <Typography variant="body1">{`Silver Ticket: ${value.purchase.tickets.silver}`}</Typography>
-                  <Typography variant="body1" sx={cardStyle.GrowText}>
-                    {`Bronze Ticket: ${value.purchase.tickets.bronze}`}
-                  </Typography>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    sx={cardStyle.Button}
-                    onClick={openRefundModal}
-                  >
-                    Request Refund
-                  </Button>
-                </CardContent>
-              </Card>
+              <MyTicketCard
+                navigate={navigate}
+                value={value}
+                openRefundModal={openRefundModal}
+              />
             );
           })}
         </Box>
