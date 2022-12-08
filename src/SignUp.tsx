@@ -17,6 +17,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Type
 import textFieldState from './globalTypes/FormTextFieldState';
+import { createUser } from './globalTypes/data/User';
 // Custom Hook to load LoginContext
 import { useLoginContext } from './LoginContext';
 // Style
@@ -274,7 +275,11 @@ function SignUp(): React.ReactElement {
             password.value
           );
 
-          // TODO: Add additional user information to the FireStore database
+          // Add additional user information to the FireStore database
+          await createUser(loginContext.firebaseApp, {
+            email: email.value,
+            name: name.value,
+          });
 
           // Alert
           alert('New User Created!!');
@@ -309,15 +314,16 @@ function SignUp(): React.ReactElement {
       }
     },
     [
-      name,
       email,
+      name,
       password,
-      navigate,
-      state,
-      nameCheck,
+      loginContext,
       emailCheck,
+      nameCheck,
       passwordCheck,
       passwordRetypedCheck,
+      state,
+      navigate,
     ]
   );
 
