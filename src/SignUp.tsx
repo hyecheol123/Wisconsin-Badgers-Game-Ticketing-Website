@@ -8,6 +8,8 @@
 import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
+// Google Firebase
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 // Material UI
 import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
 // Components
@@ -15,14 +17,13 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 // Type
 import textFieldState from './globalTypes/FormTextFieldState';
+import { createUser } from './globalTypes/data/User';
 // Custom Hook to load LoginContext
 import { useLoginContext } from './LoginContext';
 // Style
 import contentStyle from './globalStyles/contentStyle';
 import formStyle from './globalStyles/formStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
-// Demo data
-import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React functional component for SignUp
@@ -165,13 +166,38 @@ function SignUp(): React.ReactElement {
     return true;
   }, [email]);
   const passwordCheck = React.useCallback((): boolean => {
-    // TODO: Password Rule - More than 8 characters in total, should include at least one upper case, one lower case, and one number
+    // Password Rule
+    //   - More than 8 characters in total
+    //   - Should be less than 25 characters in total
+    //   - Should include at least one upper case
+    //   - Should include at least one lower case
+    //   - Should include at least one one number
+    const passwordRegExp = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$/;
     if (password.value === '') {
       setPassword((prevPW) => {
         return {
           ...prevPW,
           error: true,
           helperText: 'Password is required field!',
+        };
+      });
+      return false;
+    } else if (!passwordRegExp.test(password.value)) {
+      setPassword((prevPW) => {
+        return {
+          ...prevPW,
+          error: true,
+          helperText:
+            'Password should include one upper case/lower case/number!',
+        };
+      });
+      return false;
+    } else if (password.value.length < 8 || password.value.length > 25) {
+      setPassword((prevPW) => {
+        return {
+          ...prevPW,
+          error: true,
+          helperText: 'Password length should be 8~25 characters long!',
         };
       });
       return false;
@@ -223,11 +249,11 @@ function SignUp(): React.ReactElement {
 
   // Function to submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent) => {
+    async (event: React.SyntheticEvent) => {
       event.preventDefault();
       setDisabled(true);
 
-      // TODO: Check validity of inputs
+      // Check validity of inputs
       const validityCheck = [
         nameCheck(),
         emailCheck(),
@@ -239,65 +265,68 @@ function SignUp(): React.ReactElement {
         return;
       }
 
-      // TODO: API Calls
-      const newUsersString = sessionStorage.getItem('users');
-      const newUsers =
-        newUsersString !== null ? JSON.parse(newUsersString) : [];
-      // Check for Duplicated Email Address
-      if (defaultLoginUser[0].email === email.value) {
-        setEmail((prevEmail) => {
-          return {
-            ...prevEmail,
-            error: true,
-            helperText: 'Already Signed Up!! Use Another Email!!',
-          };
-        });
-        setDisabled(false);
-        return;
-      }
-      for (const user of newUsers) {
-        if (user.email === email.value) {
-          setEmail((prevEmail) => {
-            return {
-              ...prevEmail,
-              error: true,
-              helperText: 'Already Signed Up!! Use Another Email!!',
-            };
+      // Firebase Auth API Call to create new user
+      if (loginContext.firebaseAuth) {
+        try {
+          // Try to add user information to the Firebase Authentication
+          await createUserWithEmailAndPassword(
+            loginContext.firebaseAuth,
+            email.value,
+            password.value
+          );
+
+          // Add additional user information to the FireStore database
+          await createUser(loginContext.firebaseApp, {
+            email: email.value,
+            name: name.value,
           });
+
+          // Signout the user
+          await signOut(loginContext.firebaseAuth);
+
+          // Alert
+          alert('New User Created!!');
+
+          // Return to the previous view
+          const prevLocation = (state as { prevLocation: string })
+            ?.prevLocation;
+          if (prevLocation) {
+            navigate(prevLocation);
+          } else {
+            navigate('/');
+          }
+        } catch (e) {
+          if ((e as { code: string }).code === 'auth/email-already-in-use') {
+            setEmail((prevEmail) => {
+              return {
+                ...prevEmail,
+                error: true,
+                helperText: 'Email already in use',
+              };
+            });
+          } else {
+            console.error(e);
+            alert('An Error Occurred! Report to Admin!');
+          }
+        } finally {
           setDisabled(false);
-          return;
         }
-      }
-      const userInfo = {
-        email: email.value,
-        password: password.value,
-        name: name.value,
-      };
-      newUsers.push(userInfo);
-      sessionStorage.setItem('users', JSON.stringify(newUsers));
-      setDisabled(false);
-
-      // Alert
-      alert('New User Created!!');
-
-      // Return to the previous view
-      const prevLocation = (state as { prevLocation: string })?.prevLocation;
-      if (prevLocation) {
-        navigate(prevLocation);
       } else {
-        navigate('/');
+        alert('An Error Occured! Report to Admin!');
+        console.error('Firebase Auth Not Setup');
       }
     },
     [
-      name,
       email,
+      name,
       password,
-      navigate,
-      state,
-      nameCheck,
+      loginContext,
       emailCheck,
+      nameCheck,
       passwordCheck,
       passwordRetypedCheck,
+      state,
+      navigate,
     ]
   );
 

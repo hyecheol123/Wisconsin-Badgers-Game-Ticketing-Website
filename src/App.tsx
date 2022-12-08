@@ -182,19 +182,33 @@ function App(): React.ReactElement {
     // When application is not initialized
     if (!loginContext.initialized) {
       // Check whether user token alive or not
-      const prevLoginEmail = localStorage.getItem('LOGIN');
-      if (prevLoginEmail !== null) {
-        // TODO: API Call to Renew Token
-        loginContext.dispatch({
-          type: 'INITIALIZE',
-          login: true,
-          email: prevLoginEmail,
-        });
-        // TOOD: If failed, unset local storage flag
-      } else {
-        localStorage.removeItem('LOGIN');
-        loginContext.dispatch({ type: 'INITIALIZE', login: false });
-      }
+      loginContext.firebaseAuth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in
+          if (!loginContext.initialized) {
+            loginContext.dispatch({
+              type: 'INITIALIZE',
+              login: true,
+              email: user.email?.toString(),
+            });
+          } else {
+            if (!user.email) {
+              throw new Error('CANNOT FIND USER EMAIL');
+            }
+            loginContext.dispatch({ type: 'LOGIN', email: user.email });
+          }
+        } else {
+          // No user is signed in
+          if (!loginContext.initialized) {
+            loginContext.dispatch({
+              type: 'INITIALIZE',
+              login: false,
+            });
+          } else {
+            loginContext.dispatch({ type: 'LOGOUT' });
+          }
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

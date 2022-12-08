@@ -6,6 +6,9 @@
 
 // React
 import React from 'react';
+// Google Firebase
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
 
 // Type definition for props of LoginContextProvider
 type LoginContextProviderProps = {
@@ -20,6 +23,8 @@ type Action =
 
 // Type definition for state
 type State = {
+  firebaseApp: FirebaseApp;
+  firebaseAuth: Auth;
   login: boolean;
   email?: string;
   initialized: boolean;
@@ -27,7 +32,17 @@ type State = {
 };
 
 // Initial Data of Reducer
+const firebaseApp = initializeApp({
+  apiKey: 'AIzaSyCexUUhZ3sLRmGFWJPBkErVYsutMbmvnR0',
+  authDomain: 'wisconsin-badgers-ticket-final.firebaseapp.com',
+  projectId: 'wisconsin-badgers-ticket-final',
+  storageBucket: 'wisconsin-badgers-ticket-final.appspot.com',
+  messagingSenderId: '312687998623',
+  appId: '1:312687998623:web:6c79d87bedf0f223a6d4aa',
+});
 const initialData: State = {
+  firebaseApp: firebaseApp,
+  firebaseAuth: getAuth(firebaseApp),
   login: false,
   initialized: false,
   dispatch: () => {},
@@ -44,9 +59,17 @@ function reducer(state: State, action: Action): State {
   // Actiaul login data - token - will be set in cookie automatically
   switch (action.type) {
     case 'LOGIN':
-      return { ...state, login: true, email: action.email };
+      return {
+        ...state,
+        login: true,
+        email: action.email,
+      };
     case 'LOGOUT':
-      return { ...state, login: false, email: undefined };
+      return {
+        ...state,
+        login: false,
+        email: undefined,
+      };
     case 'INITIALIZE':
       return {
         ...state,

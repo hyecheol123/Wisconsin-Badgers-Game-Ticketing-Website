@@ -89,7 +89,6 @@ Use `Google Firebase Hosting` to deploy this website.
   ```
   User: {
     email: string
-    password: string (hashed?)
     name: string
   }
   ```
@@ -131,6 +130,24 @@ Use `Google Firebase Hosting` to deploy this website.
       gold: number
       silver: number
       bronze: number
+    }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Firestore Security Rules</summary>
+
+  ```
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /user/{email} {
+    	  allow create;
+      }
+      match /{document=**} {
+        allow read, write: if false;
+      }
     }
   }
   ```

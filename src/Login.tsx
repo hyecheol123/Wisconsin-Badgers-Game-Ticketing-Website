@@ -8,6 +8,8 @@
 import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
+// Google Firebaes
+import { signInWithEmailAndPassword } from 'firebase/auth';
 // Material UI
 import {
   Alert,
@@ -19,14 +21,11 @@ import {
   Typography,
 } from '@mui/material';
 // Global Type
-import Error from './globalTypes/FormError';
+import FormError from './globalTypes/FormError';
 // Custom Hook to load LoginContext
 import { useLoginContext } from './LoginContext';
 // Global Style
 import styles from './globalStyles/accountStyle';
-
-// Demo data
-import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React Functional Component to generate Login view
@@ -42,12 +41,10 @@ function Login(): React.ReactElement {
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
-  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
-
-  // Get users (demo data)
-  const newUsersString = sessionStorage.getItem('users');
-  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
-  const users = [...defaultLoginUser, ...newUsers];
+  const [error, setError] = React.useState<FormError>({
+    error: false,
+    msg: '',
+  });
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -110,7 +107,7 @@ function Login(): React.ReactElement {
 
   // Submit Event Handler
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent) => {
+    async (event: React.SyntheticEvent) => {
       event.preventDefault();
       setDisabled(true);
 
@@ -121,24 +118,47 @@ function Login(): React.ReactElement {
       }
 
       // Submit Login API Request
-      let targetUser;
-      for (const user of users) {
-        if (user.email === email.toLowerCase()) {
-          targetUser = user;
-          break;
+      if (loginContext.firebaseAuth) {
+        try {
+          // Try to sign in using given credentials
+          const userCredential = await signInWithEmailAndPassword(
+            loginContext.firebaseAuth,
+            email,
+            password
+          );
+
+          // Successfully logged in
+          if (userCredential.user.email !== null) {
+            loginContext.dispatch({
+              type: 'LOGIN',
+              email: userCredential.user.email,
+            });
+          } else {
+            throw new Error(
+              'Firebase Error - No email information on User Credential'
+            );
+          }
+          goBack();
+        } catch (e) {
+          if (
+            (e as { code: string }).code === 'auth/user-not-found' ||
+            (e as { code: string }).code === 'auth/wrong-password'
+          ) {
+            // Login Fail Error Message
+            setError({
+              error: true,
+              msg: 'Cannot find user with given email and password',
+            });
+          } else {
+            console.error(e);
+            alert('An Error Occurred! Report to Admin!');
+          }
+        } finally {
+          setDisabled(false);
         }
-      }
-      if (targetUser !== undefined && password === targetUser.password) {
-        localStorage.setItem('LOGIN', targetUser.email);
-        loginContext.dispatch({ type: 'LOGIN', email: targetUser.email });
-        goBack();
       } else {
-        // Login Fail Error Message
-        setError({
-          error: true,
-          msg: 'Cannot find user with given email and password',
-        });
-        setDisabled(false);
+        alert('An Error Occured! Report to Admin!');
+        console.error('Firebase Auth Not Setup');
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -8,6 +8,12 @@
 import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
+// Google Firebase
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from 'firebase/auth';
 // Material UI
 import {
   Alert,
@@ -18,14 +24,11 @@ import {
   Typography,
 } from '@mui/material';
 // Global Types
-import Error from './globalTypes/FormError';
+import FormError from './globalTypes/FormError';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Global Style
 import styles from './globalStyles/accountStyle';
-
-// Demo data
-import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React functional component to generate change password view
@@ -37,17 +40,16 @@ function ChangePW(): React.ReactElement {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Get users (demo data)
-  const newUsersString = sessionStorage.getItem('users');
-  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
-
   // State
   const loginContext = useLoginContext();
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [currentPW, setCurrentPW] = React.useState<string>('');
   const [newPW, setNewPW] = React.useState<string>('');
   const [confirmPW, setConfirmPW] = React.useState<string>('');
-  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
+  const [error, setError] = React.useState<FormError>({
+    error: false,
+    msg: '',
+  });
 
   // Function to direct user to previous location
   const goBack = React.useCallback((): void => {
@@ -79,6 +81,14 @@ function ChangePW(): React.ReactElement {
 
   // Helper function to check input
   const inputCheck = React.useCallback((): boolean => {
+    // Password Rule
+    //   - More than 8 characters in total
+    //   - Should be less than 25 characters in total
+    //   - Should include at least one upper case
+    //   - Should include at least one lower case
+    //   - Should include at least one one number
+    const passwordRegExp = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$/;
+
     if (currentPW === '' || newPW === '' || confirmPW === '') {
       // All field should not be empty
       setError({ error: true, msg: 'All fields are required!!' });
@@ -88,6 +98,12 @@ function ChangePW(): React.ReactElement {
       setError({
         error: true,
         msg: 'Current password and new password should be different',
+      });
+      return false;
+    } else if (!passwordRegExp.test(newPW)) {
+      setError({
+        error: true,
+        msg: 'Password should include one upper case/lower case/number!',
       });
       return false;
     } else if (newPW !== confirmPW) {
@@ -103,9 +119,10 @@ function ChangePW(): React.ReactElement {
 
   // Submit Event Handler
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent) => {
+    async (event: React.SyntheticEvent) => {
       event.preventDefault();
       setDisabled(true);
+
       // Check validity of inputs
       if (!inputCheck()) {
         setDisabled(false);
@@ -113,37 +130,42 @@ function ChangePW(): React.ReactElement {
       }
 
       // Submit API Request
-      const currentUserEmail = loginContext.email;
-      let currentUser;
-      let willUpdate = -1;
-      if (defaultLoginUser[0].email === currentUserEmail) {
-        currentUser = defaultLoginUser[0];
-      }
-      for (let idx = 0; idx < newUsers.length; idx++) {
-        if (newUsers[idx].email === currentUserEmail) {
-          currentUser = newUsers[idx];
-          willUpdate = idx;
-          break;
+      if (loginContext.firebaseAuth) {
+        try {
+          // Check user's current password
+          const { currentUser } = loginContext.firebaseAuth;
+          if (currentUser && currentUser.email) {
+            const credential = EmailAuthProvider.credential(
+              currentUser.email,
+              currentPW
+            );
+            await reauthenticateWithCredential(currentUser, credential);
+          } else {
+            throw new Error('Firebase Error - No Current User');
+          }
+
+          // Update User's Password
+          await updatePassword(currentUser, newPW);
+          goBack();
+        } catch (e) {
+          if ((e as { code: string }).code === 'auth/wrong-password') {
+            setError({
+              error: true,
+              msg: 'Current Password Not Correct',
+            });
+          } else {
+            console.error(e);
+            alert('An Error Occurred! Report to Admin!');
+          }
+        } finally {
+          setDisabled(false);
         }
-      }
-      if (currentPW === currentUser.password) {
-        // TODO: Password Change
-        if (willUpdate !== -1) {
-          newUsers[willUpdate].password = newPW;
-          sessionStorage.setItem('users', JSON.stringify(newUsers));
-        }
-        goBack();
       } else {
-        // Change PW Fail Error Message
-        setError({
-          error: true,
-          msg: 'Current Password Not Correct',
-        });
-        setDisabled(false);
+        alert('An Error Occured! Report to Admin!');
+        console.error('Firebase Auth Not Setup');
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [confirmPW, currentPW, newPW, goBack, inputCheck]
+    [loginContext, currentPW, newPW, goBack, inputCheck]
   );
 
   // EventHandler to close alert

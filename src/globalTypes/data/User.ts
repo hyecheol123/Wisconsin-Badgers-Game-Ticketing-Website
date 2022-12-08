@@ -5,10 +5,22 @@
  * @author Hyecheol (Jerry) Jang
  */
 
-type User = {
+// Google Firebase
+import { FirebaseApp } from 'firebase/app';
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
+
+export type User = {
   email: string;
-  password: string;
   name: string;
 };
 
-export default User;
+/**
+ * Function to add new user information to the database
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {User} data user that will be newly inserted
+ * @return {Promise<void>} Promise for the create document job
+ */
+export function createUser(app: FirebaseApp, data: User): Promise<void> {
+  return setDoc(doc(getFirestore(app), 'user', data.email), data);
+}
