@@ -8,6 +8,8 @@
 import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
+// Google Firebase
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 // Material UI
 import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
 // Components
@@ -21,8 +23,6 @@ import { useLoginContext } from './LoginContext';
 import contentStyle from './globalStyles/contentStyle';
 import formStyle from './globalStyles/formStyle';
 import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
-// Demo data
-import defaultLoginUser from './demoData/loginUser';
 
 /**
  * React functional component for SignUp
@@ -223,7 +223,7 @@ function SignUp(): React.ReactElement {
 
   // Function to submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent) => {
+    async (event: React.SyntheticEvent) => {
       event.preventDefault();
       setDisabled(true);
 
@@ -239,53 +239,40 @@ function SignUp(): React.ReactElement {
         return;
       }
 
-      // TODO: API Calls
-      const newUsersString = sessionStorage.getItem('users');
-      const newUsers =
-        newUsersString !== null ? JSON.parse(newUsersString) : [];
-      // Check for Duplicated Email Address
-      if (defaultLoginUser[0].email === email.value) {
-        setEmail((prevEmail) => {
-          return {
-            ...prevEmail,
-            error: true,
-            helperText: 'Already Signed Up!! Use Another Email!!',
-          };
-        });
-        setDisabled(false);
-        return;
-      }
-      for (const user of newUsers) {
-        if (user.email === email.value) {
-          setEmail((prevEmail) => {
-            return {
-              ...prevEmail,
-              error: true,
-              helperText: 'Already Signed Up!! Use Another Email!!',
-            };
-          });
+      // Firebase Auth API Call to create new user
+      if (loginContext.firebaseAuth) {
+        try {
+          // Try to add user information to the Firebase Authentication
+          await createUserWithEmailAndPassword(
+            loginContext.firebaseAuth,
+            email.value,
+            password.value
+          );
+
+          // TODO: Add additional user information to the FireStore database
+
+          // Alert
+          alert('New User Created!!');
+
+          // Return to the previous view
+          const prevLocation = (state as { prevLocation: string })
+            ?.prevLocation;
+          if (prevLocation) {
+            navigate(prevLocation);
+          } else {
+            navigate('/');
+          }
+        } catch (e) {
+          // Possible Error
+          console.error(e);
+          alert('An Error Occurred');
+        } finally {
           setDisabled(false);
-          return;
         }
-      }
-      const userInfo = {
-        email: email.value,
-        password: password.value,
-        name: name.value,
-      };
-      newUsers.push(userInfo);
-      sessionStorage.setItem('users', JSON.stringify(newUsers));
-      setDisabled(false);
-
-      // Alert
-      alert('New User Created!!');
-
-      // Return to the previous view
-      const prevLocation = (state as { prevLocation: string })?.prevLocation;
-      if (prevLocation) {
-        navigate(prevLocation);
       } else {
-        navigate('/');
+        // Alert
+        alert('An Error Occured');
+        console.error('Firebase Auth Not Setup');
       }
     },
     [
