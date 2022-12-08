@@ -165,13 +165,38 @@ function SignUp(): React.ReactElement {
     return true;
   }, [email]);
   const passwordCheck = React.useCallback((): boolean => {
-    // TODO: Password Rule - More than 8 characters in total, should include at least one upper case, one lower case, and one number
+    // Password Rule
+    //   - More than 8 characters in total
+    //   - Should be less than 25 characters in total
+    //   - Should include at least one upper case
+    //   - Should include at least one lower case
+    //   - Should include at least one one number
+    const passwordRegExp = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])$/;
     if (password.value === '') {
       setPassword((prevPW) => {
         return {
           ...prevPW,
           error: true,
           helperText: 'Password is required field!',
+        };
+      });
+      return false;
+    } else if (!passwordRegExp.test(password.value)) {
+      setPassword((prevPW) => {
+        return {
+          ...prevPW,
+          error: true,
+          helperText:
+            'Password should include one upper case/lower case/number!',
+        };
+      });
+      return false;
+    } else if (password.value.length < 8 || password.value.length > 25) {
+      setPassword((prevPW) => {
+        return {
+          ...prevPW,
+          error: true,
+          helperText: 'Password length should be 8~25 characters long!',
         };
       });
       return false;
@@ -263,15 +288,23 @@ function SignUp(): React.ReactElement {
             navigate('/');
           }
         } catch (e) {
-          // Possible Error
-          console.error(e);
-          alert('An Error Occurred');
+          if ((e as { code: string }).code === 'auth/email-already-in-use') {
+            setEmail((prevEmail) => {
+              return {
+                ...prevEmail,
+                error: true,
+                helperText: 'Email already in use',
+              };
+            });
+          } else {
+            console.error(e);
+            alert('An Error Occurred! Report to Admin!');
+          }
         } finally {
           setDisabled(false);
         }
       } else {
-        // Alert
-        alert('An Error Occured');
+        alert('An Error Occured! Report to Admin!');
         console.error('Firebase Auth Not Setup');
       }
     },
