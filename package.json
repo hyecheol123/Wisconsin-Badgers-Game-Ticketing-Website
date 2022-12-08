@@ -53,6 +53,7 @@
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "crypto-js": "^4.1.1",
+    "firebase": "^9.14.0",
     "firebase-tools": "^11.16.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
