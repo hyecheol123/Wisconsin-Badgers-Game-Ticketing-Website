@@ -7,8 +7,6 @@
 // React
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-// Google Firebase
-import { getAuth } from 'firebase/auth';
 // Material UI
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { TypographyOptions } from '@mui/material/styles/createTypography';
@@ -184,16 +182,13 @@ function App(): React.ReactElement {
     // When application is not initialized
     if (!loginContext.initialized) {
       // Check whether user token alive or not
-      // Setup firebase authentication
-      const auth = getAuth(loginContext.firebaseApp);
-      auth.onAuthStateChanged((user) => {
+      loginContext.firebaseAuth.onAuthStateChanged((user) => {
         if (user) {
           // User is signed in
           if (!loginContext.initialized) {
             loginContext.dispatch({
               type: 'INITIALIZE',
               login: true,
-              firebaseAuth: auth,
               email: user.email?.toString(),
             });
           } else {
@@ -208,7 +203,6 @@ function App(): React.ReactElement {
             loginContext.dispatch({
               type: 'INITIALIZE',
               login: false,
-              firebaseAuth: auth,
             });
           } else {
             loginContext.dispatch({ type: 'LOGOUT' });

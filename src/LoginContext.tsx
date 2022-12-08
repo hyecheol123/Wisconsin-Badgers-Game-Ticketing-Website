@@ -8,7 +8,7 @@
 import React from 'react';
 // Google Firebase
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Auth } from 'firebase/auth';
+import { Auth, getAuth } from 'firebase/auth';
 
 // Type definition for props of LoginContextProvider
 type LoginContextProviderProps = {
@@ -19,28 +19,30 @@ type LoginContextProviderProps = {
 type Action =
   | { type: 'LOGIN'; email: string }
   | { type: 'LOGOUT' }
-  | { type: 'INITIALIZE'; login: boolean; firebaseAuth: Auth; email?: string };
+  | { type: 'INITIALIZE'; login: boolean; email?: string };
 
 // Type definition for state
 type State = {
   firebaseApp: FirebaseApp;
+  firebaseAuth: Auth;
   login: boolean;
-  firebaseAuth?: Auth;
   email?: string;
   initialized: boolean;
   dispatch: React.Dispatch<Action>;
 };
 
 // Initial Data of Reducer
+const firebaseApp = initializeApp({
+  apiKey: 'AIzaSyCexUUhZ3sLRmGFWJPBkErVYsutMbmvnR0',
+  authDomain: 'wisconsin-badgers-ticket-final.firebaseapp.com',
+  projectId: 'wisconsin-badgers-ticket-final',
+  storageBucket: 'wisconsin-badgers-ticket-final.appspot.com',
+  messagingSenderId: '312687998623',
+  appId: '1:312687998623:web:6c79d87bedf0f223a6d4aa',
+});
 const initialData: State = {
-  firebaseApp: initializeApp({
-    apiKey: 'AIzaSyCexUUhZ3sLRmGFWJPBkErVYsutMbmvnR0',
-    authDomain: 'wisconsin-badgers-ticket-final.firebaseapp.com',
-    projectId: 'wisconsin-badgers-ticket-final',
-    storageBucket: 'wisconsin-badgers-ticket-final.appspot.com',
-    messagingSenderId: '312687998623',
-    appId: '1:312687998623:web:6c79d87bedf0f223a6d4aa',
-  }),
+  firebaseApp: firebaseApp,
+  firebaseAuth: getAuth(firebaseApp),
   login: false,
   initialized: false,
   dispatch: () => {},
@@ -72,7 +74,6 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         login: action.login,
-        firebaseAuth: action.firebaseAuth,
         email: action.email,
         initialized: true,
       };

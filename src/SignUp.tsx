@@ -172,7 +172,7 @@ function SignUp(): React.ReactElement {
     //   - Should include at least one upper case
     //   - Should include at least one lower case
     //   - Should include at least one one number
-    const passwordRegExp = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[A-Za-z0-9]*$/;
+    const passwordRegExp = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$/;
     if (password.value === '') {
       setPassword((prevPW) => {
         return {
@@ -253,7 +253,7 @@ function SignUp(): React.ReactElement {
       event.preventDefault();
       setDisabled(true);
 
-      // TODO: Check validity of inputs
+      // Check validity of inputs
       const validityCheck = [
         nameCheck(),
         emailCheck(),
