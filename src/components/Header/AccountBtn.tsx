@@ -23,6 +23,7 @@ import { AccountCircle } from '@mui/icons-material';
 import { useLoginContext } from '../../LoginContext';
 // Style
 import styles from './AccountBtnStyle';
+import { signOut } from 'firebase/auth';
 
 /**
  * React Functional Component to generate account button
@@ -68,8 +69,9 @@ function AccountBtn(): React.ReactElement {
   }, [location.pathname, navigate]);
 
   // Function to logout from session
-  const logout = React.useCallback((): void => {
-    // TODO: API Call to logout
+  const logout = React.useCallback(async (): Promise<void> => {
+    // API Call to logout
+    await signOut(loginContext.firebaseAuth);
     loginContext.dispatch({ type: 'LOGOUT' });
 
     // Close User Menu
