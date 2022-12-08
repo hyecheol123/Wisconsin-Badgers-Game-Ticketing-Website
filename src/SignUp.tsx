@@ -9,7 +9,7 @@ import React from 'react';
 // React Router
 import { useLocation, useNavigate } from 'react-router-dom';
 // Google Firebase
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 // Material UI
 import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
 // Components
@@ -172,7 +172,7 @@ function SignUp(): React.ReactElement {
     //   - Should include at least one upper case
     //   - Should include at least one lower case
     //   - Should include at least one one number
-    const passwordRegExp = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])$/;
+    const passwordRegExp = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[A-Za-z0-9]*$/;
     if (password.value === '') {
       setPassword((prevPW) => {
         return {
@@ -280,6 +280,9 @@ function SignUp(): React.ReactElement {
             email: email.value,
             name: name.value,
           });
+
+          // Signout the user
+          await signOut(loginContext.firebaseAuth);
 
           // Alert
           alert('New User Created!!');
