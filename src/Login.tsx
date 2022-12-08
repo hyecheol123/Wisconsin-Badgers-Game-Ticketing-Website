@@ -129,7 +129,6 @@ function Login(): React.ReactElement {
         }
       }
       if (targetUser !== undefined && password === targetUser.password) {
-        localStorage.setItem('LOGIN', targetUser.email);
         loginContext.dispatch({ type: 'LOGIN', email: targetUser.email });
         goBack();
       } else {

@@ -70,7 +70,6 @@ function AccountBtn(): React.ReactElement {
   // Function to logout from session
   const logout = React.useCallback((): void => {
     // TODO: API Call to logout
-    localStorage.removeItem('LOGIN');
     loginContext.dispatch({ type: 'LOGOUT' });
 
     // Close User Menu
