@@ -21,6 +21,6 @@ export type User = {
  * @param {User} data user that will be newly inserted
  * @return {Promise<void>} Promise for the create document job
  */
-export function createUser(app: FirebaseApp, data: User): Promise<void> {
+export async function createUser(app: FirebaseApp, data: User): Promise<void> {
   return setDoc(doc(getFirestore(app), 'user', data.email), data);
 }

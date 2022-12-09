@@ -35,7 +35,6 @@ import formBoxStyleProvider from './globalStyles/formBoxStyleProvider';
 import formStyle from './globalStyles/formStyle';
 
 // Demo data
-import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
 const PurchaseModal = React.lazy(
   () => import('./components/PurchaseModal/PurchaseModal')

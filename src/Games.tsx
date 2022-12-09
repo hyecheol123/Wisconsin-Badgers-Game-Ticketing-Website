@@ -13,13 +13,14 @@ import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 // Components
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+// Global Types
+import { Game, getGamesList } from './globalTypes/data/Game';
+// Custom Hook to load LoginContext
+import { useLoginContext } from './LoginContext';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import cardStyle from './globalStyles/cardStyle';
-
-// Demo data
-import games from './demoData/games';
-import defaultPurchases from './demoData/purchases';
+import Loading from './components/Loading/Loading';
 
 /**
  * React functional component for Game List
@@ -29,14 +30,10 @@ import defaultPurchases from './demoData/purchases';
 function Games(): React.ReactElement {
   // React Router
   const navigate = useNavigate();
-
-  // Get purchases (Demo Data)
-  const purchases = React.useMemo(() => {
-    const newPurchasesString = sessionStorage.getItem('purchases');
-    const newPurchases =
-      newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
-    return [...defaultPurchases, ...newPurchases];
-  }, []);
+  // States
+  const loginContext = useLoginContext();
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [games, setGames] = React.useState<Game[]>([]);
 
   // Function to move to the game detail page
   const gameDetail = React.useCallback(
@@ -46,83 +43,88 @@ function Games(): React.ReactElement {
     [navigate]
   );
 
-  // Function to calculate remaining Seats of the game
-  const getNumRemainingSeat = React.useCallback(
-    (gameId: string, numTotalSeats: number): number => {
-      for (const purchase of purchases) {
-        if (purchase.isValid && purchase.gameId === gameId) {
-          numTotalSeats -= purchase.tickets.platinum;
-          numTotalSeats -= purchase.tickets.gold;
-          numTotalSeats -= purchase.tickets.silver;
-          numTotalSeats -= purchase.tickets.bronze;
-        }
-      }
-
-      return numTotalSeats;
-    },
-    [purchases]
-  );
+  // Get Game Data
+  React.useEffect(() => {
+    getGamesList(loginContext.firebaseApp).then((gamesList) => {
+      setGames(gamesList);
+      setLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
-      <Header />
-      <Box sx={contentStyle.ContentWrapper}>
-        <Box sx={contentStyle.Content}>
-          <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            Game Lists (2023)
-          </Typography>
-          <Typography variant="body1" align="left">
-            This is the full list of this season's home game. Click the game to
-            see more detail and to purchase the tickets.
-          </Typography>
-          {games.map((value) => {
-            const gameDate = new Date(value.year, value.month - 1, value.day);
-
-            return (
-              <Card
-                key={value.id}
-                sx={cardStyle.Card}
-                onClick={(): void => {
-                  gameDetail(value.id);
-                }}
+      {!loading ? (
+        <>
+          <Header />
+          <Box sx={contentStyle.ContentWrapper}>
+            <Box sx={contentStyle.Content}>
+              <Typography
+                variant="h3"
+                align="center"
+                sx={contentStyle.PageTitle}
               >
-                <Box sx={cardStyle.ImageBox}>
-                  <CardMedia
-                    component="img"
-                    image={value.opponentImgUrl}
-                    alt={`${value.opponent} Logo`}
-                  />
-                </Box>
-                <CardContent sx={cardStyle.InfoBox}>
-                  <Typography variant="h5" component="div" noWrap>
-                    {`vs ${value.opponent}`}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    color="text.secondary"
-                    component="div"
-                    sx={cardStyle.GrowText}
+                Game Lists (2023)
+              </Typography>
+              <Typography variant="body1" align="left">
+                This is the full list of this season's home game. Click the game
+                to see more detail and to purchase the tickets.
+              </Typography>
+              {games.map((value) => {
+                const gameDate = new Date(
+                  value.year,
+                  value.month - 1,
+                  value.day
+                );
+
+                return (
+                  <Card
+                    key={value.id}
+                    sx={cardStyle.Card}
+                    onClick={(): void => {
+                      gameDetail(value.id);
+                    }}
                   >
-                    {gameDate.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </Typography>
-                  <Typography variant="body1">{`Remaining Seats: ${getNumRemainingSeat(
-                    value.id,
-                    value.ticketCount.platinum +
-                      value.ticketCount.gold +
-                      value.ticketCount.silver +
-                      value.ticketCount.bronze
-                  )}`}</Typography>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </Box>
-      </Box>
-      <Footer />
+                    <Box sx={cardStyle.ImageBox}>
+                      <CardMedia
+                        component="img"
+                        image={value.opponentImgUrl}
+                        alt={`${value.opponent} Logo`}
+                      />
+                    </Box>
+                    <CardContent sx={cardStyle.InfoBox}>
+                      <Typography variant="h5" component="div" noWrap>
+                        {`vs ${value.opponent}`}
+                      </Typography>
+                      <Typography
+                        variant="subtitle1"
+                        color="text.secondary"
+                        component="div"
+                        sx={cardStyle.GrowText}
+                      >
+                        {gameDate.toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </Typography>
+                      <Typography variant="body1">{`Remaining Seats: ${
+                        value.ticketCount.platinum +
+                        value.ticketCount.gold +
+                        value.ticketCount.silver +
+                        value.ticketCount.bronze
+                      }`}</Typography>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </Box>
+          </Box>
+          <Footer />
+        </>
+      ) : (
+        <Loading />
+      )}
     </>
   );
 }

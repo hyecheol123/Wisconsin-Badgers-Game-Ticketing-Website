@@ -24,8 +24,6 @@ import contentStyle from './globalStyles/contentStyle';
 import PurchaseConfirmationStyle from './PurchaseConfirmationStyle';
 
 // Demo data
-import defaultLoginUser from './demoData/loginUser';
-import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
 
 /**

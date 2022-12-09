@@ -34,8 +34,6 @@ import User from '../../globalTypes/data/User';
 import { useLoginContext } from '../../LoginContext';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
-// Demo Data
-import defaultLoginUser from '../../demoData/loginUser';
 
 // Type for the component's props
 type PurchaseModalProps = {

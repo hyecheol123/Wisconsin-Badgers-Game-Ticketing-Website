@@ -23,7 +23,6 @@ import Footer from './components/Footer/Footer';
 import MyTicketCard from './components/MyTicketCard/MyTicketCard';
 
 // Demo Data
-import games from './demoData/games';
 import defaultPurchases from './demoData/purchases';
 import Game from './globalTypes/data/Game';
 
