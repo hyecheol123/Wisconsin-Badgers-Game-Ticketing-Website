@@ -15,6 +15,7 @@ import {
   getFirestore,
   query,
 } from 'firebase/firestore';
+import { getPurchasedTicketCntByGameId } from './Purchase';
 
 export type Game = {
   id: string;
@@ -61,7 +62,17 @@ export async function getGamesList(app: FirebaseApp): Promise<Game[]> {
     return valA - valB;
   });
 
-  // TODO: Deduct the numbers of tickets we sold so far
+  // Deduct the numbers of tickets we sold so far
+  for (const game of result) {
+    const purchasedTicketCnt = await getPurchasedTicketCntByGameId(
+      app,
+      game.id
+    );
+    game.ticketCount.platinum -= purchasedTicketCnt.platinum;
+    game.ticketCount.gold -= purchasedTicketCnt.gold;
+    game.ticketCount.silver -= purchasedTicketCnt.silver;
+    game.ticketCount.bronze -= purchasedTicketCnt.bronze;
+  }
 
   return result;
 }
@@ -82,7 +93,12 @@ export async function getGameById(
     const result = snapshot.data() as Game;
     result['id'] = snapshot.id;
 
-    // TODO: Deduct the nubmers of tickets we sold so far
+    // Deduct the nubmers of tickets we sold so far
+    const purchasedTicketCnt = await getPurchasedTicketCntByGameId(app, id);
+    result.ticketCount.platinum -= purchasedTicketCnt.platinum;
+    result.ticketCount.gold -= purchasedTicketCnt.gold;
+    result.ticketCount.silver -= purchasedTicketCnt.silver;
+    result.ticketCount.bronze -= purchasedTicketCnt.bronze;
 
     return result;
   } else {
