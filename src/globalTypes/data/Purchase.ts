@@ -10,6 +10,7 @@ import { FirebaseApp } from 'firebase/app';
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
   query,
@@ -68,6 +69,27 @@ export async function createPurchase(
 }
 
 /**
+ * Function to get Purchase detail by purchaseId
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {string} purchaseId purchaseId is used as unique id
+ * @return {Promise<Purchase | undefined>} Promise which will be resolved to either Purchase or undefined (not exist).
+ */
+export async function getPurchaseByPurchaseId(
+  app: FirebaseApp,
+  purchaseId: string
+): Promise<Purchase | undefined> {
+  const snapshot = await getDoc(doc(getFirestore(app), 'purchase', purchaseId));
+  if (snapshot.exists()) {
+    const result = snapshot.data() as Purchase;
+    result['id'] = snapshot.id;
+    return result;
+  } else {
+    return undefined;
+  }
+}
+
+/**
  * Function to get purchased ticket count for each game
  *
  * @param {FirebaseApp} app firebase application associated with the project
@@ -82,7 +104,8 @@ export async function getPurchasedTicketCntByGameId(
   const snapshots = await getDocs(
     query(
       collection(getFirestore(app), 'purchase'),
-      where('gameId', '==', gameId)
+      where('gameId', '==', gameId),
+      where('isValid', '==', true)
     )
   );
   const purchases: Purchase[] = [];

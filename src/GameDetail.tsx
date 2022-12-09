@@ -131,7 +131,7 @@ function GameDetail(): React.ReactElement {
       setLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [gameid]);
 
   // Game not found
   if (!loading && gameInfo === undefined) {
