@@ -30,6 +30,7 @@ import {
 // Global Type
 import FormError from '../../globalTypes/FormError';
 import { getUserByEmail, User } from '../../globalTypes/data/User';
+import { createPurchase, Purchase } from '../../globalTypes/data/Purchase';
 // Custom Hooks to load Login Context
 import { useLoginContext } from '../../LoginContext';
 // Style
@@ -256,9 +257,9 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   }
 
   // Submit Form
-  const formSubmit: React.FormEventHandler<HTMLFormElement> = (
+  const formSubmit: React.FormEventHandler<HTMLFormElement> = async (
     event: React.SyntheticEvent
-  ): void => {
+  ): Promise<void> => {
     event.preventDefault();
     setDisabled(true);
 
@@ -268,8 +269,6 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       return;
     }
 
-    // TODO: Submit API request
-    // TODO: Check for the remaining seats again
     // Pretend we get payment
     const purchaseId = sha512(
       loginUser?.email +
@@ -285,10 +284,10 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       .replace(/\//g, '_')
       .substring(0, 18)
       .toUpperCase();
-    const purchaseInfo = {
+    const purchaseInfo: Purchase = {
       id: purchaseId,
       gameId: gameId,
-      userEmail: loginUser?.email,
+      userEmail: loginUser?.email as string,
       isValid: true,
       tickets: {
         platinum: ticketCounts.platinum,
@@ -297,6 +296,19 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         bronze: ticketCounts.bronze,
       },
     };
+
+    // Submit API request
+    try {
+      await createPurchase(loginContext.firebaseApp, purchaseInfo);
+    } catch (e) {
+      if ((e as { msg: string }).msg === 'already-sold') {
+        alert('Ticket already sold! Refresh page and try again!!');
+        handleClose();
+      } else {
+        console.error(e);
+        alert('An Error Occurred! Report to Admin!');
+      }
+    }
 
     // Redirect to the confirmation page
     handleClose();

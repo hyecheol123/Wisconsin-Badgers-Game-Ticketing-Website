@@ -15,6 +15,7 @@ import {
   getFirestore,
   query,
 } from 'firebase/firestore';
+// Other DataTypes
 import { getPurchasedTicketCntByGameId } from './Purchase';
 
 export type Game = {

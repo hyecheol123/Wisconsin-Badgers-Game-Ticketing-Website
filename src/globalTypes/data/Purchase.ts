@@ -9,11 +9,15 @@
 import { FirebaseApp } from 'firebase/app';
 import {
   collection,
+  doc,
   getDocs,
   getFirestore,
   query,
+  setDoc,
   where,
 } from 'firebase/firestore';
+// Other DataTypes
+import { getGameById } from './Game';
 
 export type Purchase = {
   id: string;
@@ -35,6 +39,33 @@ export type PurchasedTicketCnt = {
   silver: number;
   bronze: number;
 };
+
+/**
+ * Function to add new purchase information to the database
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {Purchase} data purchase that will be newly inserted
+ * @return {Promise<void>} Promise for the create document task
+ */
+export async function createPurchase(
+  app: FirebaseApp,
+  data: Purchase
+): Promise<void> {
+  // Check for the remaining seats again
+  const gameData = await getGameById(app, data.gameId);
+  if (
+    gameData === undefined ||
+    gameData.ticketCount.platinum < data.tickets.platinum ||
+    gameData.ticketCount.gold < data.tickets.gold ||
+    gameData.ticketCount.silver < data.tickets.silver ||
+    gameData.ticketCount.bronze < data.tickets.bronze
+  ) {
+    throw new Error('already-sold');
+  }
+
+  // Add new document
+  return setDoc(doc(getFirestore(app), 'purchase', data.id), data);
+}
 
 /**
  * Function to get purchased ticket count for each game
