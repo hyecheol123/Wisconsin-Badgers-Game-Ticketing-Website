@@ -7,7 +7,14 @@
 
 // Google Firebase
 import { FirebaseApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, query } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+} from 'firebase/firestore';
 
 export type Game = {
   id: string;
@@ -32,7 +39,6 @@ export type Game = {
   };
 };
 
-// TODO: Deduct the numbers of tickets we sold so far
 /**
  * Function to get the list of games
  *
@@ -55,5 +61,31 @@ export async function getGamesList(app: FirebaseApp): Promise<Game[]> {
     return valA - valB;
   });
 
+  // TODO: Deduct the numbers of tickets we sold so far
+
   return result;
+}
+
+/**
+ * Function to get the game detail by the gameId
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {string} id unique game id
+ * @return {Promise<Game | undefined>} Promise which will be resolved to either Game or undefined (not exist).
+ */
+export async function getGameById(
+  app: FirebaseApp,
+  id: string
+): Promise<Game | undefined> {
+  const snapshot = await getDoc(doc(getFirestore(app), 'game', id));
+  if (snapshot.exists()) {
+    const result = snapshot.data() as Game;
+    result['id'] = snapshot.id;
+
+    // TODO: Deduct the nubmers of tickets we sold so far
+
+    return result;
+  } else {
+    return undefined;
+  }
 }
