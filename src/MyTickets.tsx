@@ -13,7 +13,8 @@ import { Box, Button, Typography } from '@mui/material';
 // Custom Hooks to load Login Context
 import { useLoginContext } from './LoginContext';
 // Types
-import Purchase from './globalTypes/data/Purchase';
+import { getPurchasesByUserEmail, Purchase } from './globalTypes/data/Purchase';
+import { Game, getGameById } from './globalTypes/data/Game';
 // Styles
 import contentStyle from './globalStyles/contentStyle';
 import MyTicketsStyle from './MyTicketsStyle';
@@ -21,10 +22,7 @@ import MyTicketsStyle from './MyTicketsStyle';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import MyTicketCard from './components/MyTicketCard/MyTicketCard';
-
-// Demo Data
-import defaultPurchases from './demoData/purchases';
-import Game from './globalTypes/data/Game';
+import Loading from './components/Loading/Loading';
 
 type DisplayObj = {
   order: number;
@@ -44,50 +42,53 @@ function MyTickets(): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [displayingObj, setDisplayingObj] = React.useState<DisplayObj[]>([]);
   const [needRefresh, setNeedRefresh] = React.useState<boolean>(true);
   // Refs
   const containerRef = React.useRef(null);
 
   // Function to generate displaying data
-  const getData = React.useCallback((): DisplayObj[] => {
-    // Get purchases (demo data)
-    const newPurchasesString = sessionStorage.getItem('purchases');
-    const newPurchases =
-      newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
-    const purchases = [...defaultPurchases, ...newPurchases];
+  const getData = React.useCallback(async (): Promise<DisplayObj[]> => {
+    // Get purchases
+    const purchases = await getPurchasesByUserEmail(
+      loginContext.firebaseApp,
+      loginContext.email as string
+    );
 
-    const displayingObj = [];
+    // Generate Displaying Objects
+    const displayingObj: DisplayObj[] = [];
     for (const purchase of purchases) {
-      if (purchase.isValid && purchase.userEmail === loginContext.email) {
-        for (const game of games) {
-          if (game.id === purchase.gameId) {
-            const gameDate = parseInt(
-              `${game.year}${game.month.toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-              })}${game.day.toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-              })}`
-            );
-            const target = {
-              order: gameDate,
-              purchase: purchase,
-              game: game,
-            };
-            let idx = 0;
-            while (idx < displayingObj.length) {
-              if (displayingObj[idx].order > target.order) {
-                displayingObj.splice(idx, 0, target);
-                break;
-              }
-              idx++;
-            }
-            if (idx === displayingObj.length) {
-              displayingObj.push(target);
-            }
+      // Get Game Information
+      const game = await getGameById(loginContext.firebaseApp, purchase.gameId);
+      if (game !== undefined) {
+        const gameDate = parseInt(
+          `${game.year}${game.month.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+          })}${game.day.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+          })}`
+        );
+
+        const target = {
+          order: gameDate,
+          purchase: purchase,
+          game: game,
+        };
+
+        // sorting
+        let idx = 0;
+        while (idx < displayingObj.length) {
+          if (displayingObj[idx].order > target.order) {
+            displayingObj.splice(idx, 0, target);
             break;
           }
+          idx++;
         }
+        if (idx === displayingObj.length) {
+          displayingObj.push(target);
+        }
+        break;
       }
     }
     return displayingObj;
@@ -97,8 +98,11 @@ function MyTickets(): React.ReactElement {
   // Get Displaying data if needed
   React.useEffect(() => {
     if (needRefresh) {
-      setDisplayingObj(getData());
-      setNeedRefresh(false);
+      getData().then((data) => {
+        setDisplayingObj(data);
+        setLoading(false);
+        setNeedRefresh(false);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needRefresh]);
@@ -130,59 +134,70 @@ function MyTickets(): React.ReactElement {
 
   // Function to reload data
   const reloadData = React.useCallback((): void => {
+    setLoading(true);
     setNeedRefresh(true);
   }, []);
 
   return (
     <>
-      <Header />
-      <Box sx={contentStyle.ContentWrapper}>
-        <Box sx={contentStyle.Content} ref={containerRef}>
-          <Typography variant="h3" align="center" sx={contentStyle.PageTitle}>
-            Purchased Tickets
-          </Typography>
-          {displayingObj.length !== 0 ? (
-            displayingObj.map((value) => {
-              return (
-                <MyTicketCard
-                  key={value.purchase.id}
-                  navigate={navigate}
-                  value={value}
-                  containerRef={containerRef}
-                  reloadData={reloadData}
-                />
-              );
-            })
-          ) : (
-            <Box sx={MyTicketsStyle.NoTicketContentWrapper}>
-              <Box sx={MyTicketsStyle.NoTicketMsgWrapper}>
-                <Typography
-                  variant="h6"
-                  align="center"
-                  sx={MyTicketsStyle.NoTicketMsg}
-                >
-                  You have not purchased any tickets!!
-                </Typography>
-                <Typography
-                  variant="h6"
-                  align="center"
-                  sx={MyTicketsStyle.NoTicketMsg}
-                >
-                  Check out the game tickets now!!
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                onClick={gameList}
-                sx={MyTicketsStyle.CheckoutBtn}
+      {!loading ? (
+        <>
+          <Header />
+          <Box sx={contentStyle.ContentWrapper}>
+            <Box sx={contentStyle.Content} ref={containerRef}>
+              <Typography
+                variant="h3"
+                align="center"
+                sx={contentStyle.PageTitle}
               >
-                Explore Tickets
-              </Button>
+                Purchased Tickets
+              </Typography>
+              {displayingObj.length !== 0 ? (
+                displayingObj.map((value) => {
+                  return (
+                    <MyTicketCard
+                      key={value.purchase.id}
+                      navigate={navigate}
+                      value={value}
+                      containerRef={containerRef}
+                      reloadData={reloadData}
+                    />
+                  );
+                })
+              ) : (
+                <Box sx={MyTicketsStyle.NoTicketContentWrapper}>
+                  <Box sx={MyTicketsStyle.NoTicketMsgWrapper}>
+                    <Typography
+                      variant="h6"
+                      align="center"
+                      sx={MyTicketsStyle.NoTicketMsg}
+                    >
+                      You have not purchased any tickets!!
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      align="center"
+                      sx={MyTicketsStyle.NoTicketMsg}
+                    >
+                      Check out the game tickets now!!
+                    </Typography>
+                  </Box>
+                  <Button
+                    variant="contained"
+                    onClick={gameList}
+                    sx={MyTicketsStyle.CheckoutBtn}
+                  >
+                    Explore Tickets
+                  </Button>
+                </Box>
+              )}
             </Box>
-          )}
-        </Box>
-      </Box>
-      <Footer />
+          </Box>
+          <Footer />
+        </>
+      ) : (
+        <Loading />
+      )}
     </>
   );
 }

@@ -90,6 +90,33 @@ export async function getPurchaseByPurchaseId(
 }
 
 /**
+ * Function to get valid purchases for each user
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {string} email unique user email
+ * @return {Promise<Purchase[]>} Promise which will be resolved to Purchase array
+ */
+export async function getPurchasesByUserEmail(
+  app: FirebaseApp,
+  email: string
+): Promise<Purchase[]> {
+  const snapshots = await getDocs(
+    query(
+      collection(getFirestore(app), 'purchase'),
+      where('userEmail', '==', email),
+      where('isValid', '==', true)
+    )
+  );
+  const purchases: Purchase[] = [];
+  snapshots.forEach((doc) => {
+    const elem = doc.data();
+    elem['id'] = doc.id;
+    purchases.push(elem as Purchase);
+  });
+  return purchases;
+}
+
+/**
  * Function to get purchased ticket count for each game
  *
  * @param {FirebaseApp} app firebase application associated with the project
