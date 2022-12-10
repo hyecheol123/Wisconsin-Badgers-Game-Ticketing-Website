@@ -16,8 +16,8 @@ import {
   Typography,
 } from '@mui/material';
 // Global Types
-import Game from '../../globalTypes/data/Game';
-import Purchase from '../../globalTypes/data/Purchase';
+import { Game } from '../../globalTypes/data/Game';
+import { Purchase } from '../../globalTypes/data/Purchase';
 // Global Style
 import cardStyle from '../../globalStyles/cardStyle';
 // Components

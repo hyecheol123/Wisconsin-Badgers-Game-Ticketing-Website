@@ -28,14 +28,14 @@ import {
   Typography,
 } from '@mui/material';
 // Global Type
-import Error from '../../globalTypes/FormError';
-import User from '../../globalTypes/data/User';
+import FormError from '../../globalTypes/FormError';
+import { getUserByEmail, User } from '../../globalTypes/data/User';
+import { createPurchase, Purchase } from '../../globalTypes/data/Purchase';
 // Custom Hooks to load Login Context
 import { useLoginContext } from '../../LoginContext';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
-// Demo Data
-import defaultLoginUser from '../../demoData/loginUser';
+import Loading from '../Loading/Loading';
 
 // Type for the component's props
 type PurchaseModalProps = {
@@ -73,6 +73,8 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
 
   // State
   const loginContext = useLoginContext();
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [loginUser, setLoginUser] = React.useState<User>();
   const [cardNumber, setCardNumber] = React.useState<string>('');
   const [securityCode, setSecurityCode] = React.useState<string>('');
   const [expMonth, setExpMonth] = React.useState<number>(0);
@@ -83,19 +85,10 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   const [noResell, setNoResell] = React.useState<boolean>(false);
   const [refundTerm, setRefundTerm] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<Error>({ error: false, msg: '' });
-
-  // Retrieve user (demo data)
-  const newUsersString = sessionStorage.getItem('users');
-  const newUsers = newUsersString !== null ? JSON.parse(newUsersString) : [];
-  const users = [...defaultLoginUser, ...newUsers];
-  let loginUser: undefined | User;
-  for (const user of users) {
-    if (user.email === loginContext.email) {
-      loginUser = user;
-      break;
-    }
-  }
+  const [error, setError] = React.useState<FormError>({
+    error: false,
+    msg: '',
+  });
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -244,59 +237,83 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
     zipCode,
   ]);
 
-  // Submit Form
-  const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent): void => {
-      event.preventDefault();
-      setDisabled(true);
-
-      // Validity Check
-      if (!validityCheck()) {
-        setDisabled(false);
-        return;
+  // Retrieve user
+  React.useEffect(() => {
+    getUserByEmail(loginContext.firebaseApp, loginContext.email as string).then(
+      (userDetail) => {
+        setLoginUser(userDetail);
+        setLoading(false);
       }
-
-      // TODO: Submit API request - TODO: Check for the remaining seats again
-      // Pretend we get payment
-      const newPurchasesString = sessionStorage.getItem('purchases');
-      const newPurchases =
-        newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
-      const purchaseId = sha512(
-        loginUser?.email +
-          gameId +
-          new Date().toISOString() +
-          ticketCounts.platinum +
-          ticketCounts.gold +
-          ticketCounts.silver +
-          ticketCounts.bronze
-      )
-        .toString(base64)
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .substring(0, 18)
-        .toUpperCase();
-      const purchaseInfo = {
-        id: purchaseId,
-        gameId: gameId,
-        userEmail: loginUser?.email,
-        isValid: true,
-        tickets: {
-          platinum: ticketCounts.platinum,
-          gold: ticketCounts.gold,
-          silver: ticketCounts.silver,
-          bronze: ticketCounts.bronze,
-        },
-      };
-      newPurchases.push(purchaseInfo);
-      sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
-
-      // Redirect to the confirmation page
-      handleClose();
-      navigate(`/confirm/${purchaseId}`);
-    },
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [validityCheck]
-  );
+  }, []);
+
+  // when user is not found --> Error
+  // All users should logged in at this point
+  if (!loading && loginUser === undefined) {
+    console.error('Login User Information Not Found');
+    alert('Significant Error Occurred. Contact Admin!!');
+    return <></>;
+  }
+
+  // Submit Form
+  const formSubmit: React.FormEventHandler<HTMLFormElement> = async (
+    event: React.SyntheticEvent
+  ): Promise<void> => {
+    event.preventDefault();
+    setDisabled(true);
+
+    // Validity Check
+    if (!validityCheck()) {
+      setDisabled(false);
+      return;
+    }
+
+    // Pretend we get payment
+    const purchaseId = sha512(
+      loginUser?.email +
+        gameId +
+        new Date().toISOString() +
+        ticketCounts.platinum +
+        ticketCounts.gold +
+        ticketCounts.silver +
+        ticketCounts.bronze
+    )
+      .toString(base64)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .substring(0, 18)
+      .toUpperCase();
+    const purchaseInfo: Purchase = {
+      id: purchaseId,
+      gameId: gameId,
+      userEmail: loginUser?.email as string,
+      isValid: true,
+      tickets: {
+        platinum: ticketCounts.platinum,
+        gold: ticketCounts.gold,
+        silver: ticketCounts.silver,
+        bronze: ticketCounts.bronze,
+      },
+    };
+
+    // Submit API request
+    try {
+      await createPurchase(loginContext.firebaseApp, purchaseInfo);
+    } catch (e) {
+      if ((e as { msg: string }).msg === 'already-sold') {
+        alert('Ticket already sold! Refresh page and try again!!');
+        handleClose();
+      } else {
+        console.error(e);
+        alert('An Error Occurred! Report to Admin!');
+      }
+    }
+
+    // Redirect to the confirmation page
+    handleClose();
+    navigate(`/confirm/${purchaseId}`);
+  };
 
   const totalNumTickets =
     ticketCounts.platinum +
@@ -328,171 +345,183 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
 
   return (
     <>
-      <Modal
-        open={isOpen}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-      >
-        <Fade in={isOpen}>
-          <Box sx={modalStyle.ModalWrapper}>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              sx={modalStyle.ModalTitle}
-            >
-              Payment
-            </Typography>
-            <Typography variant="h6" component="div" align="center">
-              {`${gameDateString} | vs ${opponentTeam}`}
-            </Typography>
-            <ul>
-              <li>
-                <Typography variant="body1" align="left">
-                  <strong>{`Platinum Ticket ($${ticketPrice.platinum}): `}</strong>
-                  {ticketCounts.platinum}
+      {!loading ? (
+        <>
+          <Modal
+            open={isOpen}
+            onClose={handleClose}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+          >
+            <Fade in={isOpen}>
+              <Box sx={modalStyle.ModalWrapper}>
+                <Typography
+                  variant="h6"
+                  component="div"
+                  align="center"
+                  sx={modalStyle.ModalTitle}
+                >
+                  Payment
                 </Typography>
-              </li>
-              <li>
-                <Typography variant="body1" align="left">
-                  <strong>{`Gold Ticket ($${ticketPrice.gold}): `}</strong>
-                  {ticketCounts.gold}
+                <Typography variant="h6" component="div" align="center">
+                  {`${gameDateString} | vs ${opponentTeam}`}
                 </Typography>
-              </li>
-              <li>
-                <Typography variant="body1" align="left">
-                  <strong>{`Silver Ticket ($${ticketPrice.silver}): `}</strong>
-                  {ticketCounts.silver}
+                <ul>
+                  <li>
+                    <Typography variant="body1" align="left">
+                      <strong>{`Platinum Ticket ($${ticketPrice.platinum}): `}</strong>
+                      {ticketCounts.platinum}
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography variant="body1" align="left">
+                      <strong>{`Gold Ticket ($${ticketPrice.gold}): `}</strong>
+                      {ticketCounts.gold}
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography variant="body1" align="left">
+                      <strong>{`Silver Ticket ($${ticketPrice.silver}): `}</strong>
+                      {ticketCounts.silver}
+                    </Typography>
+                  </li>
+                  <li>
+                    <Typography variant="body1" align="left">
+                      <strong>{`Bronze Ticket ($${ticketPrice.bronze}): `}</strong>
+                      {ticketCounts.bronze}
+                    </Typography>
+                  </li>
+                </ul>
+                <Typography>
+                  To purchase <strong>{`${totalNumTickets} tickets`}</strong>{' '}
+                  listed above, you have to pay{' '}
+                  <strong>{`$${totalTicketPrice}`}</strong>.
                 </Typography>
-              </li>
-              <li>
-                <Typography variant="body1" align="left">
-                  <strong>{`Bronze Ticket ($${ticketPrice.bronze}): `}</strong>
-                  {ticketCounts.bronze}
-                </Typography>
-              </li>
-            </ul>
-            <Typography>
-              To purchase <strong>{`${totalNumTickets} tickets`}</strong> listed
-              above, you have to pay <strong>{`$${totalTicketPrice}`}</strong>.
-            </Typography>
-            <Divider sx={modalStyle.DividerMargin} />
-            <Box>
-              <form onSubmit={formSubmit}>
-                <TextField
-                  fullWidth
-                  label="Card Number"
-                  value={cardNumber}
-                  onChange={onCardNumberChange}
-                  onKeyPress={onKeyPress}
-                  sx={modalStyle.TextFieldMargin}
-                />
-                <TextField
-                  fullWidth
-                  label="Card Holder Name"
-                  value={cardHolder}
-                  onChange={onCardHolderChange}
-                  onKeyPress={onKeyPress}
-                  sx={modalStyle.TextFieldMargin}
-                />
-                <Box sx={{ ...modalStyle.TextFieldMargin, display: 'flex' }}>
-                  <TextField
-                    select
-                    fullWidth
-                    label="Expiry Month"
-                    value={expMonth}
-                    onChange={onExpMonthChange}
-                    sx={{ marginRight: '0.5em' }}
-                  >
-                    {month.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                  <TextField
-                    fullWidth
-                    label="Expiry Year"
-                    value={expYear}
-                    onChange={onExpYearChange}
-                    onKeyPress={onKeyPress}
-                    sx={{ marginLeft: '0.5em' }}
-                  />
-                </Box>
-                <TextField
-                  fullWidth
-                  label="Security Code"
-                  value={securityCode}
-                  onChange={onSecurityCodeChange}
-                  onKeyPress={onKeyPress}
-                  sx={modalStyle.TextFieldMargin}
-                />
-                <TextField
-                  fullWidth
-                  label="Billing Address Zip Code"
-                  value={zipCode}
-                  onChange={onZipCodeChange}
-                  onKeyPress={onKeyPress}
-                  sx={modalStyle.TextFieldMargin}
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={acknowledge}
-                      onChange={onAcknowledgeChange}
+                <Divider sx={modalStyle.DividerMargin} />
+                <Box>
+                  <form onSubmit={formSubmit}>
+                    <TextField
+                      fullWidth
+                      label="Card Number"
+                      value={cardNumber}
+                      onChange={onCardNumberChange}
+                      onKeyPress={onKeyPress}
+                      sx={modalStyle.TextFieldMargin}
                     />
-                  }
-                  label="By purchase tickets, you agree to the Terms and Condition."
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={refundTerm}
-                      onChange={onRefundTermChange}
+                    <TextField
+                      fullWidth
+                      label="Card Holder Name"
+                      value={cardHolder}
+                      onChange={onCardHolderChange}
+                      onKeyPress={onKeyPress}
+                      sx={modalStyle.TextFieldMargin}
                     />
-                  }
-                  label="You cannot get refund within 2 days before the game start."
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={noResell} onChange={onNoResellChange} />
-                  }
-                  label="Reselling tickets is prohibitied."
-                />
-                <Box sx={modalStyle.ButtonWrapper}>
-                  <Button
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    disabled={disabled}
-                  >
-                    Purchase
-                  </Button>
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                    onClick={handleClose}
-                    disabled={disabled}
-                  >
-                    Cancel
-                  </Button>
+                    <Box
+                      sx={{ ...modalStyle.TextFieldMargin, display: 'flex' }}
+                    >
+                      <TextField
+                        select
+                        fullWidth
+                        label="Expiry Month"
+                        value={expMonth}
+                        onChange={onExpMonthChange}
+                        sx={{ marginRight: '0.5em' }}
+                      >
+                        {month.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <TextField
+                        fullWidth
+                        label="Expiry Year"
+                        value={expYear}
+                        onChange={onExpYearChange}
+                        onKeyPress={onKeyPress}
+                        sx={{ marginLeft: '0.5em' }}
+                      />
+                    </Box>
+                    <TextField
+                      fullWidth
+                      label="Security Code"
+                      value={securityCode}
+                      onChange={onSecurityCodeChange}
+                      onKeyPress={onKeyPress}
+                      sx={modalStyle.TextFieldMargin}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Billing Address Zip Code"
+                      value={zipCode}
+                      onChange={onZipCodeChange}
+                      onKeyPress={onKeyPress}
+                      sx={modalStyle.TextFieldMargin}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={acknowledge}
+                          onChange={onAcknowledgeChange}
+                        />
+                      }
+                      label="By purchase tickets, you agree to the Terms and Condition."
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={refundTerm}
+                          onChange={onRefundTermChange}
+                        />
+                      }
+                      label="You cannot get refund within 2 days before the game start."
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={noResell}
+                          onChange={onNoResellChange}
+                        />
+                      }
+                      label="Reselling tickets is prohibitied."
+                    />
+                    <Box sx={modalStyle.ButtonWrapper}>
+                      <Button
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        disabled={disabled}
+                      >
+                        Purchase
+                      </Button>
+                      <Button
+                        color="secondary"
+                        variant="contained"
+                        onClick={handleClose}
+                        disabled={disabled}
+                      >
+                        Cancel
+                      </Button>
+                    </Box>
+                  </form>
                 </Box>
-              </form>
-            </Box>
-          </Box>
-        </Fade>
-      </Modal>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        autoHideDuration={5000}
-        open={error.error}
-        onClose={closeAlert}
-      >
-        <Alert onClose={closeAlert} severity="error">
-          {error.msg}
-        </Alert>
-      </Snackbar>
+              </Box>
+            </Fade>
+          </Modal>
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            autoHideDuration={5000}
+            open={error.error}
+            onClose={closeAlert}
+          >
+            <Alert onClose={closeAlert} severity="error">
+              {error.msg}
+            </Alert>
+          </Snackbar>
+        </>
+      ) : (
+        <Loading />
+      )}
     </>
   );
 }

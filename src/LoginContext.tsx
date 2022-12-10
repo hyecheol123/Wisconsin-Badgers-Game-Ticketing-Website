@@ -9,6 +9,7 @@ import React from 'react';
 // Google Firebase
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
+import { initializeFirestore } from 'firebase/firestore';
 
 // Type definition for props of LoginContextProvider
 type LoginContextProviderProps = {
@@ -71,6 +72,9 @@ function reducer(state: State, action: Action): State {
         email: undefined,
       };
     case 'INITIALIZE':
+      // Initialize Firestore
+      initializeFirestore(firebaseApp, { ignoreUndefinedProperties: true });
+
       return {
         ...state,
         login: action.login,
