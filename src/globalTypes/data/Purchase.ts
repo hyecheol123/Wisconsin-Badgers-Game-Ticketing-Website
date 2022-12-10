@@ -15,6 +15,7 @@ import {
   getFirestore,
   query,
   setDoc,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 // Other DataTypes
@@ -66,6 +67,35 @@ export async function createPurchase(
 
   // Add new document
   return setDoc(doc(getFirestore(app), 'purchase', data.id), data);
+}
+
+/**
+ * Function to invalidate current purchase and make new purchase if needed
+ *
+ * @param {FirebaseApp} app firebase application associated with the project
+ * @param {string} purchaseId current purchase unique id
+ * @param {string} note optional note for refund request
+ * @param {Purchase} newPurchase new purchase object to be added to the document (for partial refund support)
+ */
+export async function invalidatePurchase(
+  app: FirebaseApp,
+  purchaseId: string,
+  note?: string,
+  newPurchase?: Purchase
+): Promise<void> {
+  // Initialize database
+  const db = getFirestore(app);
+
+  // Create the new purchase if needed
+  if (newPurchase) {
+    await setDoc(doc(db, 'purchase', newPurchase.id), newPurchase);
+  }
+
+  // Update the existing purchase
+  return updateDoc(doc(db, 'purchase', purchaseId), {
+    isValid: false,
+    note: note,
+  });
 }
 
 /**

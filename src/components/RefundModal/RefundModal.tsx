@@ -25,11 +25,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+// Custom Hooks to load Login Context
+import { useLoginContext } from '../../LoginContext';
 // Style
 import modalStyle from '../../globalStyles/modalStyle';
 // Types
-import Game from '../../globalTypes/data/Game';
-import Purchase from '../../globalTypes/data/Purchase';
+import { Game } from '../../globalTypes/data/Game';
+import { invalidatePurchase, Purchase } from '../../globalTypes/data/Purchase';
 import Error from '../../globalTypes/FormError';
 
 // Type for the component's props
@@ -51,6 +53,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
   const { isOpen, game, purchase, handleClose, reloadData } = props;
 
   // State
+  const loginContext = useLoginContext();
   const [platinumTicketCnt, setPlatinumTicketCnt] = React.useState<number>(
     purchase.tickets.platinum
   );
@@ -67,11 +70,6 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
   const [acknowledge, setAcknowledge] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [error, setError] = React.useState<Error>({ error: false, msg: '' });
-
-  // Get purchases (demo data)
-  const newPurchasesString = sessionStorage.getItem('purchases');
-  const newPurchases: Purchase[] =
-    newPurchasesString !== null ? JSON.parse(newPurchasesString) : [];
 
   // EventHandlers to prevent submit on enter
   const onKeyPress: React.KeyboardEventHandler = React.useCallback(
@@ -182,7 +180,7 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
 
   // Submit Form
   const formSubmit: React.FormEventHandler<HTMLFormElement> = React.useCallback(
-    (event: React.SyntheticEvent): void => {
+    async (event: React.SyntheticEvent): Promise<void> => {
       event.preventDefault();
       setDisabled(true);
 
@@ -192,59 +190,51 @@ function RefundModal(props: RefundModalProps): React.ReactElement {
         return;
       }
 
-      // TODO: Submit API request
-      const totalTicketsCnt =
+      // If user request for partial refund, create new purchase
+      const isPartialRefund =
         purchase.tickets.platinum +
-        purchase.tickets.gold +
-        purchase.tickets.silver +
-        purchase.tickets.bronze;
-      const requestedTicketsCnt =
+          purchase.tickets.gold +
+          purchase.tickets.silver +
+          purchase.tickets.bronze !==
         platinumTicketCnt + goldTicketCnt + silverTicketCnt + bronzeTicketCnt;
-      for (const targetPurchase of newPurchases) {
-        if (targetPurchase.id === purchase.id) {
-          // Invalidate the purchase
-          targetPurchase.isValid = false;
-          if (note !== '') {
-            targetPurchase.refundMemo = note;
-          }
+      let remainingTicketPurchase: Purchase | undefined;
+      if (isPartialRefund) {
+        const remainingTicketsCnt = {
+          platinum: purchase.tickets.platinum - platinumTicketCnt,
+          gold: purchase.tickets.gold - goldTicketCnt,
+          silver: purchase.tickets.silver - silverTicketCnt,
+          bronze: purchase.tickets.bronze - bronzeTicketCnt,
+        };
 
-          // If user request for partial refund, create new purchase
-          if (totalTicketsCnt !== requestedTicketsCnt) {
-            const remainingTicketsCnt = {
-              platinum: purchase.tickets.platinum - platinumTicketCnt,
-              gold: purchase.tickets.gold - goldTicketCnt,
-              silver: purchase.tickets.silver - silverTicketCnt,
-              bronze: purchase.tickets.bronze - bronzeTicketCnt,
-            };
-
-            const remainingTicketPurchase: Purchase = {
-              id: sha512(
-                targetPurchase.userEmail +
-                  targetPurchase.gameId +
-                  new Date().toISOString() +
-                  remainingTicketsCnt.platinum +
-                  remainingTicketsCnt.gold +
-                  remainingTicketsCnt.silver +
-                  remainingTicketsCnt.bronze
-              )
-                .toString(base64)
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .substring(0, 18)
-                .toUpperCase(),
-              gameId: targetPurchase.gameId,
-              userEmail: targetPurchase.userEmail,
-              isValid: true,
-              tickets: remainingTicketsCnt,
-            };
-
-            newPurchases.push(remainingTicketPurchase);
-          }
-          sessionStorage.setItem('purchases', JSON.stringify(newPurchases));
-          break;
-        }
+        remainingTicketPurchase = {
+          id: sha512(
+            purchase.userEmail +
+              purchase.gameId +
+              new Date().toISOString() +
+              remainingTicketsCnt.platinum +
+              remainingTicketsCnt.gold +
+              remainingTicketsCnt.silver +
+              remainingTicketsCnt.bronze
+          )
+            .toString(base64)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .substring(0, 18)
+            .toUpperCase(),
+          gameId: purchase.gameId,
+          userEmail: purchase.userEmail,
+          isValid: true,
+          tickets: remainingTicketsCnt,
+        };
       }
 
+      // Submit API Request Update Purchase and create new purchase (for partial refund)
+      await invalidatePurchase(
+        loginContext.firebaseApp,
+        purchase.id,
+        note,
+        remainingTicketPurchase
+      );
       reloadData();
       alert(
         'Ticket Refunded - For partial refund, new prchase has been created.'

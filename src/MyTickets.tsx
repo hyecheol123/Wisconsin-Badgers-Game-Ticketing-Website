@@ -88,7 +88,6 @@ function MyTickets(): React.ReactElement {
         if (idx === displayingObj.length) {
           displayingObj.push(target);
         }
-        break;
       }
     }
     return displayingObj;
