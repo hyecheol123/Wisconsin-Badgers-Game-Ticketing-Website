@@ -143,7 +143,15 @@ Use `Google Firebase Hosting` to deploy this website.
   service cloud.firestore {
     match /databases/{database}/documents {
       match /user/{email} {
-    	  allow create;
+        allow create;
+        allow read: if request.auth.token.email == email;
+      }
+      match /game/{gameId} {
+        allow read;
+      }
+      match /purchase/{purchaseId} {
+        allow read;
+        allow create, update: if request.auth.token.email == request.resource.data.userEmail;
       }
       match /{document=**} {
         allow read, write: if false;
