@@ -7,7 +7,7 @@ With the consent of instructor, we decide to use React and MUI, not vanilla Java
 
 Note that this is not the official ticketing website for Wisdonsin Badgers.
 
-Website: https://wisconsin-badgers-ticket.web.app/
+Website: https://wisconsin-badgers-ticket-final.web.app/
 
 ## Milestones and Significant Due Dates
 
@@ -25,8 +25,8 @@ Website: https://wisconsin-badgers-ticket.web.app/
   - [x] Interact with user's input
   - [x] Optimize Loading - Lazy Loading
 
-**Milestone 3** *(Dec. 07. 2022)*: Full Website  
-  - [ ] Firebase database
+**Milestone 3** *(Dec. 14. 2022)*: Full Website  
+  - [x] Firebase database
   - [ ] Summary Report & Presentation
   - [x] Publish
 
