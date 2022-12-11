@@ -224,6 +224,16 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
       return false;
     }
 
+    // exp date is past
+    if (
+      parseInt(expYear) < new Date().getFullYear() ||
+      (parseInt(expYear) === new Date().getFullYear() &&
+        expMonth < new Date().getMonth() + 1)
+    ) {
+      setError({ error: true, msg: 'Expiry date cannot be past' });
+      return false;
+    }
+
     return true;
   }, [
     acknowledge,
