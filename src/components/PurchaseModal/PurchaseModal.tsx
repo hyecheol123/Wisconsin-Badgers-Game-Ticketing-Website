@@ -172,7 +172,14 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
   );
   const onZipCodeChange: React.ChangeEventHandler = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setZipCode(event.target.value);
+      const value = event.target.value;
+      if (/([^0-9])/.test(value)) {
+        setError({ error: true, msg: 'Only Numbers are Accepted' });
+      } else if (value.length > 5) {
+        setError({ error: true, msg: 'Zip Code should be 5 digits' });
+      } else {
+        setZipCode(value);
+      }
     },
     []
   );
@@ -231,6 +238,12 @@ function PurchaseModal(props: PurchaseModalProps): React.ReactElement {
         expMonth < new Date().getMonth() + 1)
     ) {
       setError({ error: true, msg: 'Expiry date cannot be past' });
+      return false;
+    }
+
+    // Zip code should be 5 digit number
+    if (zipCode.length !== 5) {
+      setError({ error: true, msg: 'Zip code should be 5 digits' });
       return false;
     }
 
