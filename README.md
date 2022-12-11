@@ -27,7 +27,7 @@ Website: https://wisconsin-badgers-ticket-final.web.app/
 
 **Milestone 3** *(Dec. 14. 2022)*: Full Website  
   - [x] Firebase database
-  - [ ] Summary Report & Presentation
+  - [x] Summary Report & Presentation
   - [x] Publish
 
 ## Quick Start Guide
